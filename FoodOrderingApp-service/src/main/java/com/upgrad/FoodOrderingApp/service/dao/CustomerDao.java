@@ -1,0 +1,42 @@
+package com.upgrad.FoodOrderingApp.service.dao;
+
+import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+
+@Repository
+public class CustomerDao {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    /**
+     * Get CustomerEntity based on the provided contact number
+     *
+     * @param contactNumber - String that represents contact number
+     * @return - CustomerEntity object if customer exists for the provided contact number, else return null
+     */
+    public CustomerEntity getCustomerByContactNum(String contactNumber) {
+        try {
+            return entityManager.createNamedQuery("customerByContactNum", CustomerEntity.class)
+                    .setParameter("contactNum", contactNumber)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    /**
+     * Method to persist CustomerEntity in the database
+     *
+     * @param customerEntity - CustomerEntity object that needs to persisted in the database
+     * @return - persisted CustomerEntity
+     */
+    public CustomerEntity saveCustomer(CustomerEntity customerEntity) {
+        entityManager.persist(customerEntity);
+        return customerEntity;
+    }
+}
