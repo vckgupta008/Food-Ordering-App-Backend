@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.api.exception;
 
 import com.upgrad.FoodOrderingApp.api.model.ErrorResponse;
+import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,24 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler(SignUpRestrictedException.class)
     public ResponseEntity<ErrorResponse> signUpRestrictionException(
-            SignUpRestrictedException exp, WebRequest request) {
+            final SignUpRestrictedException exp, final WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Method to handle AuthenticationFailedException if invalid credentials are provided during login,
+     * or does not pass the validations
+     *
+     * @param exp    - AuthenticationFailedException
+     * @param request - WebRequest
+     * @return - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public ResponseEntity<ErrorResponse> authenticationFailedException(
+            final AuthenticationFailedException exp, final WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+                .message(exp.getErrorMessage()), HttpStatus.UNAUTHORIZED);
     }
 
 }

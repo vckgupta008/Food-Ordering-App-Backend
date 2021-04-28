@@ -1,20 +1,24 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
+import com.upgrad.FoodOrderingApp.api.model.LoginResponse;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -64,6 +68,51 @@ public class CustomerController {
                 .status("CUSTOMER SUCCESSFULLY REGISTERED");
 
         return new ResponseEntity<SignupCustomerResponse>(customerResponse, HttpStatus.CREATED);
+    }
+
+    /**
+     * RestController method called when the request pattern is of type '/customer/login'
+     * and the incoming request is of 'POST' type
+     * Login customer if valid credentials are provided and generate JWT auth token
+     *
+     * @param authorization - String representing the username and password of the user
+     * @return - ResponseEntity (LoginResponse along with HTTP status code)
+     * @throws AuthenticationFailedException - if the username/ password provided is incorrect
+     */
+    @RequestMapping(method = RequestMethod.POST, path = "/customer/login",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") final String authorization)
+            throws AuthenticationFailedException {
+
+        if(!authorization.substring(0, 6).equals("Basic ")) {
+            throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
+        }
+
+        byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
+        String decodedText = new String(decode);
+        String[] decodedArray = decodedText.split(":");
+
+        if(decodedArray.length != 2) {
+            throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
+        }
+
+        CustomerAuthEntity authEntity = customerService.authenticate(decodedArray[0], decodedArray[1]);
+        CustomerEntity customer = authEntity.getCustomer();
+
+        LoginResponse loginResponse = new LoginResponse()
+                .id(customer.getUuid())
+                .message("LOGGED IN SUCCESSFULLY")
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .emailAddress(customer.getEmail())
+                .contactNumber(customer.getContactNumber());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("access-token", authEntity.getAccessToken());
+        List<String> header = new ArrayList<>();
+        header.add("access-token");
+        headers.setAccessControlExposeHeaders(header);
+
+        return new ResponseEntity<LoginResponse>(loginResponse, headers, HttpStatus.OK);
     }
 
 }

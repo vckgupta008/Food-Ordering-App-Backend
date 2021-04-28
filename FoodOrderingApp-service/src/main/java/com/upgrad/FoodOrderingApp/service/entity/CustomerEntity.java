@@ -37,7 +37,6 @@ public class CustomerEntity implements Serializable {
     private String lastName;
 
     @Column(name = "EMAIL")
-    @NotNull
     private String email;
 
     @Column(name = "CONTACT_NUMBER")

@@ -1,7 +1,9 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
 import com.upgrad.FoodOrderingApp.service.dao.CustomerDao;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +37,7 @@ public class CustomerService {
      *                                   or customer with contact number already exists in the database
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerEntity saveCustomer(CustomerEntity customerEntity) throws SignUpRestrictedException {
+    public CustomerEntity saveCustomer(final CustomerEntity customerEntity) throws SignUpRestrictedException {
 
         // Throw exception if email Id pattern does not match the pattern
         boolean isValidEmail = isValidPattern(EMAIL_PATTERN, customerEntity.getEmail());
@@ -68,9 +72,58 @@ public class CustomerService {
 
     }
 
-    private boolean isValidPattern(String reqPattern, String field) {
+    /**
+     * Method to check if a field matches the required pattern
+     *
+     * @param reqPattern - String that represents the pattern to be matched with
+     * @param field - String that represents the value to matched against the pattern
+     * @return - true if the patterm matches, else return false
+     */
+    private boolean isValidPattern(final String reqPattern, final String field) {
         Pattern pattern = Pattern.compile(reqPattern);
         Matcher matcher = pattern.matcher(field);
         return matcher.matches();
+    }
+
+    /**
+     * Method to authenticate customer and generate JWT auth token, if the provided credential is valid
+     *
+     * @param contactNum - String represents the contact of customer
+     * @param password - String represents the password of the customer
+     * @return - CustomerAuthEntity
+     * @throws AuthenticationFailedException - If the credentials provided is not valid
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerAuthEntity authenticate(final String contactNum, final String password)
+            throws AuthenticationFailedException {
+
+        CustomerEntity customerEntity = customerDao.getCustomerByContactNum(contactNum);
+
+        // If user does not exists with the provided username, throw exception
+        if (customerEntity == null) {
+            throw new AuthenticationFailedException("ATH-001", "This contact number has not been registered!");
+        }
+
+        // If the password provided is incorrect, throw exception
+        final String encryptedPassword = cryptographyProvider.encrypt(password, customerEntity.getSalt());
+        if (!encryptedPassword.equals(customerEntity.getPassword())) {
+            throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
+        }
+
+        // Generate JWT auth token
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
+
+        CustomerAuthEntity authEntity = new CustomerAuthEntity();
+        authEntity.setUuid(UUID.randomUUID().toString());
+        authEntity.setCustomer(customerEntity);
+        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime expiresAt = now.plusHours(8);
+        authEntity.setAccessToken(jwtTokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt));
+        authEntity.setLoginAt(now);
+        authEntity.setExpiresAt(expiresAt);
+
+        customerDao.createCustomerAuth(authEntity);
+
+        return authEntity;
     }
 }

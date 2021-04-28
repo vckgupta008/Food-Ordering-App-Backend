@@ -1,5 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +20,7 @@ public class CustomerDao {
      * @param contactNumber - String that represents contact number
      * @return - CustomerEntity object if customer exists for the provided contact number, else return null
      */
-    public CustomerEntity getCustomerByContactNum(String contactNumber) {
+    public CustomerEntity getCustomerByContactNum(final String contactNumber) {
         try {
             return entityManager.createNamedQuery("customerByContactNum", CustomerEntity.class)
                     .setParameter("contactNum", contactNumber)
@@ -35,8 +36,19 @@ public class CustomerDao {
      * @param customerEntity - CustomerEntity object that needs to persisted in the database
      * @return - persisted CustomerEntity
      */
-    public CustomerEntity saveCustomer(CustomerEntity customerEntity) {
+    public CustomerEntity saveCustomer(final CustomerEntity customerEntity) {
         entityManager.persist(customerEntity);
         return customerEntity;
+    }
+
+    /**
+     * Method to persist CustomerAuthEntity in the database
+     *
+     * @param authEntity - CustomerAuthEntity to be persisted in the database
+     * @return - CustomerAuthEntity
+     */
+    public CustomerAuthEntity createCustomerAuth(CustomerAuthEntity authEntity) {
+        entityManager.persist(authEntity);
+        return authEntity;
     }
 }
