@@ -54,6 +54,7 @@ public class CustomerDao {
 
     /**
      * Method to retrieve CustomerAuthEntity based on access token provided
+     *
      * @param accessToken - String represents authorization/ access token
      * @return - CustomerAuthEntity if exists ib the database for given access token, else return null
      */
@@ -67,7 +68,23 @@ public class CustomerDao {
         }
     }
 
+    /**
+     * Method to update CustomerAuthEntity object
+     *
+     * @param authEntity - CustomerAuthEntity object to be updated in the database
+     */
     public void updateCustomerAuth(CustomerAuthEntity authEntity) {
         entityManager.merge(authEntity);
+    }
+
+    /**
+     * Method to update CustomerEntity on=bject
+     *
+     * @param customerEntity - CustomerEntity object to be updated in the database
+     * @return - updated CustomerEntity
+     */
+    public CustomerEntity updateCustomer(CustomerEntity customerEntity) {
+        CustomerEntity mergedCustomerEntity = entityManager.merge(customerEntity);
+        return mergedCustomerEntity;
     }
 }

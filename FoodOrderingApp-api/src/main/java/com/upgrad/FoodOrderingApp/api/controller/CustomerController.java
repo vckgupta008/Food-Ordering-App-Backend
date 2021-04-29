@@ -1,15 +1,13 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
-import com.upgrad.FoodOrderingApp.api.model.LoginResponse;
-import com.upgrad.FoodOrderingApp.api.model.LogoutResponse;
-import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
-import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
+import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,7 +36,7 @@ public class CustomerController {
      * @param signupCustomerRequest - signup customer details
      * @return - ResponseEntity (SignupCustomerResponse along with HTTP status code)
      * @throws SignUpRestrictedException - if the required field information is missing, or does not pass validations,
-     *                                  or customer with contact number already exists in the database
+     *                                   or customer with contact number already exists in the database
      */
     @RequestMapping(method = RequestMethod.POST, path = "/customer/signup",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -86,7 +84,7 @@ public class CustomerController {
     public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") final String authorization)
             throws AuthenticationFailedException {
 
-        if(!authorization.substring(0, 6).equals("Basic ")) {
+        if (!authorization.substring(0, 6).equals("Basic ")) {
             throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
         }
 
@@ -94,7 +92,7 @@ public class CustomerController {
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
 
-        if(decodedArray.length != 2) {
+        if (decodedArray.length != 2) {
             throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
         }
 
@@ -124,11 +122,12 @@ public class CustomerController {
      *
      * @param authorization - String represents authorization token
      * @return - ResponseEntity (LogoutResponse along with HTTP status code)
-     * @throws AuthorizationFailedException - if invalid/ expired token is provided
+     * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
+     *                                      the session has already expired
      */
     @RequestMapping(method = RequestMethod.POST, path = "/customer/logout",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<LogoutResponse> logout (@RequestHeader("authorization") final String authorization)
+    public ResponseEntity<LogoutResponse> logout(@RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException {
 
         String accessToken = authorization.split("Bearer ")[1];
@@ -140,6 +139,45 @@ public class CustomerController {
                 .message("LOGGED OUT SUCCESSFULLY");
 
         return new ResponseEntity<LogoutResponse>(logoutResponse, HttpStatus.OK);
+    }
+
+    /**
+     * RestController method called when the request pattern is of type '/customer'
+     * and the incoming request is of 'PUT' type
+     * Update customer if valid authorization token and all mandatory fields are provided
+     *
+     * @param authorization         - String represents authorization token
+     * @param updateCustomerRequest - UpdateCustomerRequest containing updated customer info
+     * @return - ResponseEntity (UpdateCustomerResponse along with HTTP status code)
+     * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
+     *                                      the session has already expired
+     * @throws UpdateCustomerException      - if first name is not provided
+     */
+    @RequestMapping(method = RequestMethod.PUT, path = "/customer",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UpdateCustomerResponse> update(@RequestHeader("authorization") final String authorization,
+                                                         @RequestBody(required = false) final UpdateCustomerRequest updateCustomerRequest)
+            throws AuthorizationFailedException, UpdateCustomerException {
+
+        // Throw exception if first name of customer is not provided
+        if (updateCustomerRequest.getFirstName() == null
+                || updateCustomerRequest.getFirstName().isEmpty()) {
+            throw new UpdateCustomerException("UCR-002", "First name field should not be empty");
+        }
+
+        String accessToken = authorization.split("Bearer ")[1];
+        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        customerEntity.setFirstName(updateCustomerRequest.getFirstName());
+        customerEntity.setLastName(updateCustomerRequest.getLastName());
+        CustomerEntity updatedCustomerEntity = customerService.updateCustomer(customerEntity);
+
+        UpdateCustomerResponse updateCustomerResponse = new UpdateCustomerResponse()
+                .id(updatedCustomerEntity.getUuid())
+                .status("CUSTOMER DETAILS UPDATED SUCCESSFULLY")
+                .firstName(updatedCustomerEntity.getFirstName())
+                .lastName(updatedCustomerEntity.getLastName());
+
+        return new ResponseEntity<UpdateCustomerResponse>(updateCustomerResponse, HttpStatus.OK);
     }
 
 }

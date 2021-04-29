@@ -1,5 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
+import com.upgrad.FoodOrderingApp.service.common.CommonValidation;
 import com.upgrad.FoodOrderingApp.service.dao.CustomerDao;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
@@ -21,10 +22,13 @@ import java.util.regex.Pattern;
 public class CustomerService {
 
     @Autowired
-    CustomerDao customerDao;
+    private CustomerDao customerDao;
 
     @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
+
+    @Autowired
+    private CommonValidation commonValidation;
 
     private static final String EMAIL_PATTERN = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$";
     private static final String PASSWORD_PATTERN = "^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#@$%&*!^]).{8,}$";
@@ -138,27 +142,35 @@ public class CustomerService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
-
-        CustomerAuthEntity authEntity = customerDao.getCustomerAuth(accessToken);
-
-        // Throw exception if the customer is not logged in
-        if (authEntity == null) {
-            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
-        }
-
-        //Throw exception if the customer is already logged out
-        if (authEntity.getLogoutAt() != null) {
-            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
-        }
-
+        CustomerAuthEntity authEntity = commonValidation.validateCustomerAuthEntity(accessToken);
         final ZonedDateTime now = ZonedDateTime.now();
-        // Throw exception is the customer session has already expired
-        if (authEntity.getExpiresAt().isBefore(now)) {
-            throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
-        }
-
         authEntity.setLogoutAt(now);
         customerDao.updateCustomerAuth(authEntity);
         return authEntity;
+    }
+
+    /**
+     * Method to retrieve Customer details if access token provided is valid
+     *
+     * @param accessToken - String represents access token
+     * @return - CustomerEntity, if access token provided is valid
+     * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
+     *                                      the session has already expired
+     */
+    public CustomerEntity getCustomer(final String accessToken) throws AuthorizationFailedException {
+        CustomerAuthEntity authEntity = commonValidation.validateCustomerAuthEntity(accessToken);
+        return authEntity.getCustomer();
+    }
+
+    /**
+     * Method to update CustomerEntity in the database
+     *
+     * @param customerEntity - CustomerEntity object to be updated
+     * @return - updated CustomerEntity
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerEntity updateCustomer(CustomerEntity customerEntity) {
+        CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
+        return updatedCustomerEntity;
     }
 }
