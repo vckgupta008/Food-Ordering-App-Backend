@@ -4,6 +4,7 @@ import com.upgrad.FoodOrderingApp.service.dao.CustomerDao;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class CustomerService {
      * Method to check if a field matches the required pattern
      *
      * @param reqPattern - String that represents the pattern to be matched with
-     * @param field - String that represents the value to matched against the pattern
+     * @param field      - String that represents the value to matched against the pattern
      * @return - true if the patterm matches, else return false
      */
     private boolean isValidPattern(final String reqPattern, final String field) {
@@ -89,7 +90,7 @@ public class CustomerService {
      * Method to authenticate customer and generate JWT auth token, if the provided credential is valid
      *
      * @param contactNum - String represents the contact of customer
-     * @param password - String represents the password of the customer
+     * @param password   - String represents the password of the customer
      * @return - CustomerAuthEntity
      * @throws AuthenticationFailedException - If the credentials provided is not valid
      */
@@ -99,7 +100,7 @@ public class CustomerService {
 
         CustomerEntity customerEntity = customerDao.getCustomerByContactNum(contactNum);
 
-        // If user does not exists with the provided username, throw exception
+        // If customer does not exists with the provided contact, throw exception
         if (customerEntity == null) {
             throw new AuthenticationFailedException("ATH-001", "This contact number has not been registered!");
         }
@@ -124,6 +125,40 @@ public class CustomerService {
 
         customerDao.createCustomerAuth(authEntity);
 
+        return authEntity;
+    }
+
+    /**
+     * Method to logout customer if valid access token is provided
+     *
+     * @param accessToken - String represents access token
+     * @return - CustomerAuthEntity, if customer successfully logged out
+     * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
+     *                                      the session has already expired
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
+
+        CustomerAuthEntity authEntity = customerDao.getCustomerAuth(accessToken);
+
+        // Throw exception if the customer is not logged in
+        if (authEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }
+
+        //Throw exception if the customer is already logged out
+        if (authEntity.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
+        }
+
+        final ZonedDateTime now = ZonedDateTime.now();
+        // Throw exception is the customer session has already expired
+        if (authEntity.getExpiresAt().isBefore(now)) {
+            throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
+        }
+
+        authEntity.setLogoutAt(now);
+        customerDao.updateCustomerAuth(authEntity);
         return authEntity;
     }
 }

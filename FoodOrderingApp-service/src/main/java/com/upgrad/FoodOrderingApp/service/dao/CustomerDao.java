@@ -47,8 +47,27 @@ public class CustomerDao {
      * @param authEntity - CustomerAuthEntity to be persisted in the database
      * @return - CustomerAuthEntity
      */
-    public CustomerAuthEntity createCustomerAuth(CustomerAuthEntity authEntity) {
+    public CustomerAuthEntity createCustomerAuth(final CustomerAuthEntity authEntity) {
         entityManager.persist(authEntity);
         return authEntity;
+    }
+
+    /**
+     * Method to retrieve CustomerAuthEntity based on access token provided
+     * @param accessToken - String represents authorization/ access token
+     * @return - CustomerAuthEntity if exists ib the database for given access token, else return null
+     */
+    public CustomerAuthEntity getCustomerAuth(final String accessToken) {
+        try {
+            return entityManager.createNamedQuery("customerAuthByAccessToken", CustomerAuthEntity.class)
+                    .setParameter("accessToken", accessToken)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public void updateCustomerAuth(CustomerAuthEntity authEntity) {
+        entityManager.merge(authEntity);
     }
 }

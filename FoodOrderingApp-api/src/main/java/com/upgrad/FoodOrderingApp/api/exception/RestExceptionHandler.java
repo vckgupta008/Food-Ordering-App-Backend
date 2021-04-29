@@ -2,6 +2,7 @@ package com.upgrad.FoodOrderingApp.api.exception;
 
 import com.upgrad.FoodOrderingApp.api.model.ErrorResponse;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,20 @@ public class RestExceptionHandler {
             final AuthenticationFailedException exp, final WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Method to handle AuthorizationFailedException if invalid/ expired authorization token is provided during logout,
+     *
+     * @param exp    - AuthorizationFailedException
+     * @param request - WebRequest
+     * @return - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(AuthorizationFailedException.class)
+    public ResponseEntity<ErrorResponse> authorizationFailedException(
+            final AuthorizationFailedException exp, final WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+                .message(exp.getErrorMessage()), HttpStatus.FORBIDDEN);
     }
 
 }

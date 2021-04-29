@@ -1,12 +1,14 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.upgrad.FoodOrderingApp.api.model.LoginResponse;
+import com.upgrad.FoodOrderingApp.api.model.LogoutResponse;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -75,9 +77,9 @@ public class CustomerController {
      * and the incoming request is of 'POST' type
      * Login customer if valid credentials are provided and generate JWT auth token
      *
-     * @param authorization - String representing the username and password of the user
+     * @param authorization - String representing the contact number and password of the customer
      * @return - ResponseEntity (LoginResponse along with HTTP status code)
-     * @throws AuthenticationFailedException - if the username/ password provided is incorrect
+     * @throws AuthenticationFailedException - if the contact number/ password provided is incorrect
      */
     @RequestMapping(method = RequestMethod.POST, path = "/customer/login",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -113,6 +115,31 @@ public class CustomerController {
         headers.setAccessControlExposeHeaders(header);
 
         return new ResponseEntity<LoginResponse>(loginResponse, headers, HttpStatus.OK);
+    }
+
+    /**
+     * RestController method called when the request pattern is of type '/customer/logout'
+     * and the incoming request is of 'POST' type
+     * Sign out customer if valid authorization token is provided
+     *
+     * @param authorization - String represents authorization token
+     * @return - ResponseEntity (LogoutResponse along with HTTP status code)
+     * @throws AuthorizationFailedException - if invalid/ expired token is provided
+     */
+    @RequestMapping(method = RequestMethod.POST, path = "/customer/logout",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<LogoutResponse> logout (@RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException {
+
+        String accessToken = authorization.split("Bearer ")[1];
+        CustomerAuthEntity authEntity = customerService.logout(accessToken);
+        CustomerEntity customerEntity = authEntity.getCustomer();
+
+        LogoutResponse logoutResponse = new LogoutResponse()
+                .id(customerEntity.getUuid())
+                .message("LOGGED OUT SUCCESSFULLY");
+
+        return new ResponseEntity<LogoutResponse>(logoutResponse, HttpStatus.OK);
     }
 
 }
