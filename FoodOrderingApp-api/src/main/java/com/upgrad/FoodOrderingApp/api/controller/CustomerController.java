@@ -2,6 +2,7 @@ package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
+import com.upgrad.FoodOrderingApp.service.common.CommonValidation;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
@@ -28,6 +29,9 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private CommonValidation commonValidation;
+
     /**
      * RestController method called when the request pattern is of type '/customer/signup'
      * and the incoming request is of 'POST' type
@@ -45,10 +49,10 @@ public class CustomerController {
             throws SignUpRestrictedException {
 
         // Throw exception if any of the mandatory field value does not exist
-        if (signupCustomerRequest.getFirstName().isEmpty()
-                || signupCustomerRequest.getEmailAddress().isEmpty()
-                || signupCustomerRequest.getContactNumber().isEmpty()
-                || signupCustomerRequest.getPassword().isEmpty()) {
+        if (commonValidation.isEmptyFieldValue(signupCustomerRequest.getFirstName())
+                || commonValidation.isEmptyFieldValue(signupCustomerRequest.getEmailAddress())
+                || commonValidation.isEmptyFieldValue(signupCustomerRequest.getContactNumber())
+                || commonValidation.isEmptyFieldValue(signupCustomerRequest.getPassword())) {
             throw new SignUpRestrictedException("SGR-005", "Except last name all fields should be filled");
         }
 
@@ -160,8 +164,7 @@ public class CustomerController {
             throws AuthorizationFailedException, UpdateCustomerException {
 
         // Throw exception if first name of customer is not provided
-        if (updateCustomerRequest.getFirstName() == null
-                || updateCustomerRequest.getFirstName().isEmpty()) {
+        if (commonValidation.isEmptyFieldValue(updateCustomerRequest.getFirstName())) {
             throw new UpdateCustomerException("UCR-002", "First name field should not be empty");
         }
 
@@ -203,8 +206,8 @@ public class CustomerController {
         final String newPassword = updatePasswordRequest.getNewPassword();
 
         // Throw exception if the old or new password is not provided
-        if (oldPassword == null || oldPassword.isEmpty()
-                || newPassword == null || newPassword.isEmpty()) {
+        if (commonValidation.isEmptyFieldValue(oldPassword)
+                || commonValidation.isEmptyFieldValue(newPassword)) {
             throw new UpdateCustomerException("UCR-003", "No field should be empty");
         }
 

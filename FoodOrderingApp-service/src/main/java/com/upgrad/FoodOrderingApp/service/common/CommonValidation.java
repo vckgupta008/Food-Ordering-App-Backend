@@ -43,4 +43,14 @@ public class CommonValidation {
         }
         return authEntity;
     }
+
+    /**
+     * Method to check if a particular field value is null or empty
+     *
+     * @param fieldValue - String whose value needs to be verified
+     * @return - true if the field value is null/ empty, else returns false
+     */
+    public boolean isEmptyFieldValue(final String fieldValue) {
+        return fieldValue == null || fieldValue.isEmpty();
+    }
 }
