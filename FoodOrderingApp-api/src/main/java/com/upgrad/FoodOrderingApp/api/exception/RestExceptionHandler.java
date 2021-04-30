@@ -59,7 +59,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Method to handle UpdateCustomerException if customer first name is not present
+     * Method to handle UpdateCustomerException if any mandatory fields in updated customer object is not present
      *
      * @param exp     - UpdateCustomerException
      * @param request - WebRequest

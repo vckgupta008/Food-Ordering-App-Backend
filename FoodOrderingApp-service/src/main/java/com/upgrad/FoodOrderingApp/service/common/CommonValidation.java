@@ -23,7 +23,7 @@ public class CommonValidation {
      * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
      *                                      the session has already expired
      */
-    public CustomerAuthEntity validateCustomerAuthEntity(String accessToken) throws AuthorizationFailedException {
+    public CustomerAuthEntity validateCustomerAuthEntity(final String accessToken) throws AuthorizationFailedException {
         CustomerAuthEntity authEntity = customerDao.getCustomerAuth(accessToken);
 
         // Throw exception if the customer is not logged in

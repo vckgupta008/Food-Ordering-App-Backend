@@ -26,7 +26,7 @@ import java.util.UUID;
 public class CustomerController {
 
     @Autowired
-    CustomerService customerService;
+    private CustomerService customerService;
 
     /**
      * RestController method called when the request pattern is of type '/customer/signup'
@@ -144,7 +144,7 @@ public class CustomerController {
     /**
      * RestController method called when the request pattern is of type '/customer'
      * and the incoming request is of 'PUT' type
-     * Update customer if valid authorization token and all mandatory fields are provided
+     * Update customer details if valid authorization token and all mandatory fields are provided
      *
      * @param authorization         - String represents authorization token
      * @param updateCustomerRequest - UpdateCustomerRequest containing updated customer info
@@ -155,8 +155,8 @@ public class CustomerController {
      */
     @RequestMapping(method = RequestMethod.PUT, path = "/customer",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UpdateCustomerResponse> update(@RequestHeader("authorization") final String authorization,
-                                                         @RequestBody(required = false) final UpdateCustomerRequest updateCustomerRequest)
+    public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader("authorization") final String authorization,
+                                                                        @RequestBody(required = false) final UpdateCustomerRequest updateCustomerRequest)
             throws AuthorizationFailedException, UpdateCustomerException {
 
         // Throw exception if first name of customer is not provided
@@ -178,6 +178,46 @@ public class CustomerController {
                 .lastName(updatedCustomerEntity.getLastName());
 
         return new ResponseEntity<UpdateCustomerResponse>(updateCustomerResponse, HttpStatus.OK);
+    }
+
+    /**
+     * RestController method called when the request pattern is of type '/customer/password'
+     * and the incoming request is of 'PUT' type
+     * Update customer password if valid authorization token and all mandatory fields are provided
+     *
+     * @param authorization         - String represents authorization token
+     * @param updatePasswordRequest - UpdatePasswordRequest containing old and new password info
+     * @return - ResponseEntity (UpdatePasswordResponse along with HTTP status code)
+     * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
+     *                                      the session has already expired
+     * @throws UpdateCustomerException      - if old and new password info is empty, or the new password is not of valid format,
+     *                                      or old password is invalid
+     */
+    @RequestMapping(method = RequestMethod.PUT, path = "/customer/password",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String authorization,
+                                                                         @RequestBody(required = false) final UpdatePasswordRequest updatePasswordRequest)
+            throws AuthorizationFailedException, UpdateCustomerException {
+
+        final String oldPassword = updatePasswordRequest.getOldPassword();
+        final String newPassword = updatePasswordRequest.getNewPassword();
+
+        // Throw exception if the old or new password is not provided
+        if (oldPassword == null || oldPassword.isEmpty()
+                || newPassword == null || newPassword.isEmpty()) {
+            throw new UpdateCustomerException("UCR-003", "No field should be empty");
+        }
+
+        String accessToken = authorization.split("Bearer ")[1];
+        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        CustomerEntity updatedCustomerEntity = customerService.updateCustomerPassword(
+                oldPassword, newPassword, customerEntity);
+
+        UpdatePasswordResponse updatePasswordResponse = new UpdatePasswordResponse()
+                .id(updatedCustomerEntity.getUuid())
+                .status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
+
+        return new ResponseEntity<UpdatePasswordResponse>(updatePasswordResponse, HttpStatus.OK);
     }
 
 }

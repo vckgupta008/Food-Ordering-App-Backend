@@ -73,7 +73,7 @@ public class CustomerDao {
      *
      * @param authEntity - CustomerAuthEntity object to be updated in the database
      */
-    public void updateCustomerAuth(CustomerAuthEntity authEntity) {
+    public void updateCustomerAuth(final CustomerAuthEntity authEntity) {
         entityManager.merge(authEntity);
     }
 
@@ -83,7 +83,7 @@ public class CustomerDao {
      * @param customerEntity - CustomerEntity object to be updated in the database
      * @return - updated CustomerEntity
      */
-    public CustomerEntity updateCustomer(CustomerEntity customerEntity) {
+    public CustomerEntity updateCustomer(final CustomerEntity customerEntity) {
         CustomerEntity mergedCustomerEntity = entityManager.merge(customerEntity);
         return mergedCustomerEntity;
     }
