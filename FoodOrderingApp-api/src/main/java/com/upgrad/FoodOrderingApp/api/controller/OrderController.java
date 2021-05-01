@@ -22,7 +22,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     @Autowired
-    CustomerService customerService;
+     private CustomerService customerService;
 
     /**
      * RestController method called when the request pattern is of type "/order/coupon/{coupon_name}"
@@ -40,7 +40,8 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.GET, path = "/order/coupon/{coupon_name}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CouponDetailsResponse> getAllAnswersToQuestion(@RequestHeader("authorization") final String authorization,
-                                                                         @PathVariable("coupon_name") String couponName) throws AuthorizationFailedException, CouponNotFoundException {
+                                                                         @PathVariable("coupon_name") String couponName)
+            throws AuthorizationFailedException, CouponNotFoundException {
         String accessToken = authorization.split("Bearer ")[1];
         CustomerEntity customerEntity = customerService.getCustomer(accessToken);
         CouponEntity couponEntity = orderService.getCouponByCouponName(couponName);
