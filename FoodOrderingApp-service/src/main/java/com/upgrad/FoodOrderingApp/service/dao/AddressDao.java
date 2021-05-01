@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.Collections;
+import java.util.List;
 
 @Repository
 public class AddressDao {
@@ -50,5 +52,22 @@ public class AddressDao {
      */
     public void saveCustomerAddr(CustomerAddressEntity customerAddressEntity) {
         entityManager.persist(customerAddressEntity);
+    }
+
+    /**
+     * Method to retrieve all addresses from the database for a customer
+     *
+     * @param customerEntity - CustomerEntity object
+     * @return - List of CustomerAddressEntity
+     */
+    public List<CustomerAddressEntity> getAllAddress(final CustomerEntity customerEntity) {
+        List<CustomerAddressEntity> addresses = entityManager
+                .createNamedQuery("customerAddressByCustomer", CustomerAddressEntity.class)
+                .setParameter("customer", customerEntity)
+                .getResultList();
+        if (addresses == null) {
+            return Collections.emptyList();
+        }
+        return addresses;
     }
 }

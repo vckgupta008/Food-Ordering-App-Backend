@@ -23,6 +23,14 @@ import java.io.Serializable;
 )
 public class StateEntity implements Serializable {
 
+    public StateEntity() {
+    }
+
+    public StateEntity(String uuid, String stateName) {
+        this.uuid = uuid;
+        this.stateName = stateName;
+    }
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

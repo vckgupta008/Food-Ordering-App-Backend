@@ -14,6 +14,12 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "customer_address")
+@NamedQueries(
+        {
+                @NamedQuery(name = "customerAddressByCustomer",
+                        query = "select ca from CustomerAddressEntity ca where ca.customer = :customer order by ca.address.id desc ")
+        }
+)
 public class CustomerAddressEntity {
 
     @Id
