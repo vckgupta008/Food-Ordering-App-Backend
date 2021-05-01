@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class AddressService {
 
@@ -44,5 +47,21 @@ public class AddressService {
         addressDao.saveCustomerAddr(customerAddressEntity);
 
         return savedAddressEntity;
+    }
+
+    /**
+     * Method to retrieve all address for a customer
+     *
+     * @param customerEntity - CustomerEntity object for which the addresses need to be fetched
+     * @return - List of AddressEntity
+     */
+    public List<AddressEntity> getAllAddress(final CustomerEntity customerEntity) {
+        List<AddressEntity> addressEntities = new ArrayList<>();
+        List<CustomerAddressEntity> customerAddressEntities = addressDao.getAllAddress(customerEntity);
+        if (!customerAddressEntities.isEmpty()) {
+            customerAddressEntities.forEach(
+                    customerAddressEntity -> addressEntities.add(customerAddressEntity.getAddress()));
+        }
+        return addressEntities;
     }
 }
