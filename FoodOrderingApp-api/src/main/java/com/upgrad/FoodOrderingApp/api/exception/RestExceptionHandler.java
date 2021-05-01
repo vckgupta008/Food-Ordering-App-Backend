@@ -97,4 +97,18 @@ public class RestExceptionHandler {
                 .message(exp.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Method to handle CouponNotFoundException if user does not exist in the database
+     *
+     * @param excp      - CouponNotFoundException
+     * @param request   - WebRequest
+     * @return          - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(CouponNotFoundException.class)
+    public ResponseEntity<ErrorResponse> couponNotFoundException(
+            CouponNotFoundException excp, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
+
 }
