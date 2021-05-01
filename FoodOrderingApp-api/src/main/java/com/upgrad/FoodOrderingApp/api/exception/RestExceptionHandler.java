@@ -1,10 +1,7 @@
 package com.upgrad.FoodOrderingApp.api.exception;
 
 import com.upgrad.FoodOrderingApp.api.model.ErrorResponse;
-import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
-import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
-import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
-import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
+import com.upgrad.FoodOrderingApp.service.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -59,7 +56,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Method to handle UpdateCustomerException if customer first name is not present
+     * Method to handle UpdateCustomerException if any mandatory fields in updated customer object is not present
      *
      * @param exp     - UpdateCustomerException
      * @param request - WebRequest
@@ -68,6 +65,34 @@ public class RestExceptionHandler {
     @ExceptionHandler(UpdateCustomerException.class)
     public ResponseEntity<ErrorResponse> updateCustomerException(
             final UpdateCustomerException exp, final WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+                .message(exp.getErrorMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Method to handle SaveAddressException if any mandatory fields address object is not present
+     *
+     * @param exp     - SaveAddressException
+     * @param request - WebRequest
+     * @return - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(SaveAddressException.class)
+    public ResponseEntity<ErrorResponse> saveAddressException(
+            final SaveAddressException exp, final WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+                .message(exp.getErrorMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Method to handle AddressNotFoundException if any mandatory fields address object is not present
+     *
+     * @param exp     - AddressNotFoundException
+     * @param request - WebRequest
+     * @return - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(AddressNotFoundException.class)
+    public ResponseEntity<ErrorResponse> addressNotFoundException(
+            final AddressNotFoundException exp, final WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }

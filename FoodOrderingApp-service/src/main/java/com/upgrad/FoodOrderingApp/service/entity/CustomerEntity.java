@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * The CustomerEntity class is mapped to table 'customer' in database
@@ -53,6 +54,9 @@ public class CustomerEntity implements Serializable {
     @NotNull
     @ToStringExclude
     private String salt;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "customers")
+    private List<AddressEntity> address;
 
     public Integer getId() {
         return id;
@@ -116,6 +120,14 @@ public class CustomerEntity implements Serializable {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public List<AddressEntity> getAddress() {
+        return address;
+    }
+
+    public void setAddress(List<AddressEntity> address) {
+        this.address = address;
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,8 +59,7 @@ public class CustomerService {
         }
 
         // Throw exception if password does not match the pattern
-        if (customerEntity.getPassword().length() < 8
-                || !isValidPattern(PASSWORD_PATTERN, customerEntity.getPassword())) {
+        if (!isValidPattern(PASSWORD_PATTERN, customerEntity.getPassword())) {
             throw new SignUpRestrictedException("SGR-004", "Weak password!");
         }
 
@@ -69,25 +69,10 @@ public class CustomerService {
             throw new SignUpRestrictedException("SGR-001", "This contact number is already registered! Try other contact number.");
         }
 
-        String[] encryptedText = cryptographyProvider.encrypt(customerEntity.getPassword());
-        customerEntity.setSalt(encryptedText[0]);
-        customerEntity.setPassword(encryptedText[1]);
-
+        // Set encrypted passowrd into CustomerEntity object
+        setEncryptedPassword(customerEntity, customerEntity.getPassword());
         return customerDao.saveCustomer(customerEntity);
 
-    }
-
-    /**
-     * Method to check if a field matches the required pattern
-     *
-     * @param reqPattern - String that represents the pattern to be matched with
-     * @param field      - String that represents the value to matched against the pattern
-     * @return - true if the patterm matches, else return false
-     */
-    private boolean isValidPattern(final String reqPattern, final String field) {
-        Pattern pattern = Pattern.compile(reqPattern);
-        Matcher matcher = pattern.matcher(field);
-        return matcher.matches();
     }
 
     /**
@@ -169,8 +154,66 @@ public class CustomerService {
      * @return - updated CustomerEntity
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerEntity updateCustomer(CustomerEntity customerEntity) {
+    public CustomerEntity updateCustomer(final CustomerEntity customerEntity) {
         CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
         return updatedCustomerEntity;
+    }
+
+    /**
+     * Method to update CustomerEntity if correct passwords information are provided
+     *
+     * @param oldPassword    - String representing old password
+     * @param newPassword    - String representing new password
+     * @param customerEntity - CustomerEntity currently stored in the database
+     * @return - updated CustomerEntity
+     * @throws UpdateCustomerException - if the new passowrd does not match the required pattern,
+     *                                 or the old password does not match with the password present in the database
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerEntity updateCustomerPassword(final String oldPassword, final String newPassword,
+                                                 final CustomerEntity customerEntity)
+            throws UpdateCustomerException {
+
+        // Throw exception if new password does not match the pattern
+        if (!isValidPattern(PASSWORD_PATTERN, newPassword)) {
+            throw new UpdateCustomerException("UCR-001", "Weak password!");
+        }
+
+        // If the old password provided is incorrect, throw exception
+        final String encryptedPassword = cryptographyProvider.encrypt(oldPassword, customerEntity.getSalt());
+        if (!encryptedPassword.equals(customerEntity.getPassword())) {
+            throw new UpdateCustomerException("UCR-004", "Incorrect old password!");
+        }
+
+        // Set encrypted password into CustomerEntity object
+        setEncryptedPassword(customerEntity, newPassword);
+        CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
+        return updatedCustomerEntity;
+
+    }
+
+    /**
+     * Method to check if a field matches the required pattern
+     *
+     * @param reqPattern - String that represents the pattern to be matched with
+     * @param field      - String that represents the value to matched against the pattern
+     * @return - true if the patterm matches, else return false
+     */
+    private boolean isValidPattern(final String reqPattern, final String field) {
+        Pattern pattern = Pattern.compile(reqPattern);
+        Matcher matcher = pattern.matcher(field);
+        return matcher.matches();
+    }
+
+    /**
+     * Method to set encrypted password into CustomerEntity
+     *
+     * @param customerEntity - CustomerEntity object
+     * @param password       - Password to be encrypted
+     */
+    private void setEncryptedPassword(final CustomerEntity customerEntity, final String password) {
+        String[] encryptedText = cryptographyProvider.encrypt(password);
+        customerEntity.setSalt(encryptedText[0]);
+        customerEntity.setPassword(encryptedText[1]);
     }
 }

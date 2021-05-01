@@ -23,7 +23,7 @@ public class CommonValidation {
      * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
      *                                      the session has already expired
      */
-    public CustomerAuthEntity validateCustomerAuthEntity(String accessToken) throws AuthorizationFailedException {
+    public CustomerAuthEntity validateCustomerAuthEntity(final String accessToken) throws AuthorizationFailedException {
         CustomerAuthEntity authEntity = customerDao.getCustomerAuth(accessToken);
 
         // Throw exception if the customer is not logged in
@@ -42,5 +42,15 @@ public class CommonValidation {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
         }
         return authEntity;
+    }
+
+    /**
+     * Method to check if a particular field value is null or empty
+     *
+     * @param fieldValue - String whose value needs to be verified
+     * @return - true if the field value is null/ empty, else returns false
+     */
+    public boolean isEmptyFieldValue(final String fieldValue) {
+        return fieldValue == null || fieldValue.isEmpty();
     }
 }
