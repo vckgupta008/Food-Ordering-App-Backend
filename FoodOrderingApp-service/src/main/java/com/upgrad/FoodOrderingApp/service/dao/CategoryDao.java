@@ -1,7 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
-import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -28,4 +27,21 @@ public class CategoryDao {
             return null;
         }
     }
+
+    /**
+     * Get  category details using category uuid
+     *
+     * @param categoryUuid - String represents category uuid
+     * @return - category details using category uuid
+     */
+    public CategoryEntity getCategoryById(String categoryUuid) {
+        try {
+            return entityManager.createNamedQuery("getCategoryUsingUuid", CategoryEntity.class)
+                    .setParameter("categoryUuid", categoryUuid)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
 }
