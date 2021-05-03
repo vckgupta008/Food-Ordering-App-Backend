@@ -1,10 +1,14 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
+import com.upgrad.FoodOrderingApp.service.common.CommonValidation;
 import com.upgrad.FoodOrderingApp.service.dao.AddressDao;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
+import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,14 +23,22 @@ public class AddressService {
     @Autowired
     private AddressDao addressDao;
 
+    @Autowired
+    private CommonValidation commonValidation;
+
     /**
      * Method to get StateEntity from the database for the uuid provided
      *
      * @param stateUuid - String represents state Uuid
      * @return - StateEntity
      */
-    public StateEntity getStateByUUID(final String stateUuid) {
+    public StateEntity getStateByUUID(final String stateUuid) throws AddressNotFoundException {
         StateEntity stateEntity = addressDao.getStateByUUID(stateUuid);
+
+        // Throw exception if no state exists in the database with the provided state uuid
+        if (stateEntity == null) {
+            throw new AddressNotFoundException("ANF-002", "No state by this id");
+        }
         return stateEntity;
     }
 
@@ -38,7 +50,23 @@ public class AddressService {
      * @return - saved AddressEntity
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public AddressEntity saveAddress(final AddressEntity addressEntity, final CustomerEntity customerEntity) {
+    public AddressEntity saveAddress(final AddressEntity addressEntity, final CustomerEntity customerEntity) throws SaveAddressException {
+
+        // Throw exception if any of the required field is Empty
+        if (commonValidation.isEmptyFieldValue((addressEntity.getFlatBuildNum()))
+                || commonValidation.isEmptyFieldValue(addressEntity.getLocality())
+                || commonValidation.isEmptyFieldValue(addressEntity.getCity())
+                || commonValidation.isEmptyFieldValue(addressEntity.getPincode())
+                || commonValidation.isEmptyFieldValue(addressEntity.getUuid())) {
+            throw new SaveAddressException("SAR-001", "No field can be empty");
+        }
+
+        // Throw exception if the pincode is invalid
+        if (addressEntity.getPincode().length() != 6
+                || !StringUtils.isNumeric(addressEntity.getPincode())) {
+            throw new SaveAddressException("SAR-002", "Invalid pincode");
+        }
+
         AddressEntity savedAddressEntity = addressDao.saveAddress(addressEntity);
 
         CustomerAddressEntity customerAddressEntity = new CustomerAddressEntity();

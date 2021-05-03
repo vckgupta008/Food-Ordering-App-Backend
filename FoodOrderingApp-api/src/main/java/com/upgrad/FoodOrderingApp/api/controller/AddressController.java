@@ -58,26 +58,7 @@ public class AddressController {
         String accessToken = authorization.split("Bearer ")[1];
         CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
-        // Throw exception if any of the required field is Empty
-        if (commonValidation.isEmptyFieldValue((saveAddressRequest.getFlatBuildingName()))
-                || commonValidation.isEmptyFieldValue(saveAddressRequest.getLocality())
-                || commonValidation.isEmptyFieldValue(saveAddressRequest.getCity())
-                || commonValidation.isEmptyFieldValue(saveAddressRequest.getPincode())
-                || commonValidation.isEmptyFieldValue(saveAddressRequest.getStateUuid())) {
-            throw new SaveAddressException("SAR-001", "No field can be empty");
-        }
-
-        // Throw exception if the pincode is invalid
-        if (saveAddressRequest.getPincode().length() != 6
-                || !StringUtils.isNumeric(saveAddressRequest.getPincode())) {
-            throw new SaveAddressException("SAR-002", "Invalid pincode");
-        }
-
-        // Throw exception if no state exists in the database with the provided state uuid
         StateEntity state = addressService.getStateByUUID(saveAddressRequest.getStateUuid());
-        if (state == null) {
-            throw new AddressNotFoundException("ANF-002", "No state by this id");
-        }
 
         // Set fields into AddressEntity
         AddressEntity addressEntity = new AddressEntity();
