@@ -28,4 +28,20 @@ public class RestaurantDao {
         }
     }
 
+
+    /**
+     * Method to get all restaurants using restaurant name
+     *
+     * @return - list of Restaurant Entities using restaurant name
+     */
+    public List<RestaurantEntity> restaurantsByName(String restaurantName) {
+        try {
+            return entityManager.createNamedQuery("restaurantsByName", RestaurantEntity.class)
+                    .setParameter("restaurantName","%" + restaurantName.toLowerCase() + "%")
+                    .getResultList();
+        } catch(NoResultException nre) {
+            return null;
+        }
+    }
+
 }
