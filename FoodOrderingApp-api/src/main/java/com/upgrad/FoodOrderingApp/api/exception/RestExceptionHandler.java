@@ -110,5 +110,18 @@ public class RestExceptionHandler {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
+    /**
+     * Method to handle CategoryNotFoundException if user does not exist in the database
+     *
+     * @param excp      - CategoryNotFoundException
+     * @param request   - WebRequest
+     * @return          - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> categoryNotFoundException(
+            final CategoryNotFoundException excp, final WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
 
 }
