@@ -18,6 +18,8 @@ import java.util.List;
                 @NamedQuery(name = "getAllCategoriesOrderedByName",
                         query = "select c from CategoryEntity c order by c.categoryName"),
                 @NamedQuery(name = "getCategoryUsingUuid",
+                        query = "select c from CategoryEntity c where c.uuid = :categoryUuid"),
+                @NamedQuery(name = "getCategoryUsingRestaurantUuid",
                         query = "select c from CategoryEntity c where c.uuid = :categoryUuid")
         }
 )
@@ -36,6 +38,9 @@ public class CategoryEntity implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "categories")
     private List<ItemEntity> items;
+
+//    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
+//    private List<RestaurantEntity> restaurants;
 
     public String getCategoryName() {
         return categoryName;
