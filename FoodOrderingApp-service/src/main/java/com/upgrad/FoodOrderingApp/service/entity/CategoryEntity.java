@@ -18,8 +18,6 @@ import java.util.List;
                 @NamedQuery(name = "getAllCategoriesOrderedByName",
                         query = "select c from CategoryEntity c order by c.categoryName"),
                 @NamedQuery(name = "getCategoryUsingUuid",
-                        query = "select c from CategoryEntity c where c.uuid = :categoryUuid"),
-                @NamedQuery(name = "getCategoryUsingRestaurantUuid",
                         query = "select c from CategoryEntity c where c.uuid = :categoryUuid")
         }
 )
