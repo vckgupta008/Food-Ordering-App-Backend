@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
+import com.upgrad.FoodOrderingApp.service.entity.RestaurantCategoryEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -40,6 +41,22 @@ public class CategoryDao {
                     .setParameter("categoryUuid", categoryUuid)
                     .getSingleResult();
         } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+
+    /**
+     * Method to get all RestaurantCategoryEntity using restaurant uuid
+     *
+     * @return -  get all RestaurantCategoryEntity  using restaurant uuid
+     */
+    public List<RestaurantCategoryEntity> getCategoriesByRestaurant(String restaurantUuid) {
+        try {
+            return entityManager.createNamedQuery("getCategoriesByRestaurant", RestaurantCategoryEntity.class)
+                    .setParameter("restaurantUuid",restaurantUuid)
+                    .getResultList();
+        } catch(NoResultException nre) {
             return null;
         }
     }
