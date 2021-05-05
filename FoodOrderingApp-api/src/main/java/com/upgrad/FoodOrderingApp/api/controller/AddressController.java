@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -131,5 +132,37 @@ public class AddressController {
                 .stateName(addressEntity.getState().getStateName());
         addressList.setState(addressListState);
         return addressList;
+    }
+    /**
+     * Method to get getAllStates method in addressService and returns list of stateEntity.
+     *
+     * Any user can access this stateList
+     *
+     * @return - ResponseEntity<StatesListResponse>
+     */
+    @RequestMapping(method = RequestMethod.GET,path = "/states",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+
+    public ResponseEntity<StatesListResponse> getAllStates(){
+
+
+        List<StateEntity> stateEntities = addressService.getAllStates();
+
+        if(!stateEntities.isEmpty()) {//Checking if StateEntities is empty.
+            //Creates List of StateList using Model StateList.
+            List<StatesList> statesLists = new ArrayList<> ();
+            //looping in to get details of all the the stateEntity & then create a stateList and add UUID of state and stateName and add the newly created StateList to the list of StateList.
+            stateEntities.forEach(stateEntity -> {
+                StatesList statesList = new StatesList()
+                        .id(UUID.fromString(stateEntity.getUuid ()))
+                        .stateName(stateEntity.getStateName());
+                statesLists.add(statesList);
+            });
+
+            //Creating StatesListResponse and adding list of stateLists
+            StatesListResponse statesListResponse = new StatesListResponse().states(statesLists);
+            return new ResponseEntity<StatesListResponse>(statesListResponse, HttpStatus.OK);
+        }else
+            //Return empty set if stateEntities is empty.
+            return new ResponseEntity<StatesListResponse>(new StatesListResponse(),HttpStatus.OK);
     }
 }

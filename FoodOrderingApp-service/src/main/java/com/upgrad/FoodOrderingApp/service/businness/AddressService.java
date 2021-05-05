@@ -2,6 +2,7 @@ package com.upgrad.FoodOrderingApp.service.businness;
 
 import com.upgrad.FoodOrderingApp.service.common.CommonValidation;
 import com.upgrad.FoodOrderingApp.service.dao.AddressDao;
+import com.upgrad.FoodOrderingApp.service.dao.StateDao;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
@@ -25,6 +26,9 @@ public class AddressService {
 
     @Autowired
     private CommonValidation commonValidation;
+
+    @Autowired
+    private StateDao stateDao;
 
     /**
      * Method to get StateEntity from the database for the uuid provided
@@ -92,4 +96,15 @@ public class AddressService {
         }
         return addressEntities;
     }
+    /**
+     * Method to retrieve all states for a customer
+     * Calls getAllStates of stateDao to get all States.
+     * @return - List of all state name with id
+     */
+    public List<StateEntity> getAllStates(){
+        List<StateEntity> stateEntities = stateDao.getAllStates();
+        return stateEntities;
+    }
 }
+
+
