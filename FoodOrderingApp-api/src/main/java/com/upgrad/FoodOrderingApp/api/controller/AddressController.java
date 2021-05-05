@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -131,5 +132,74 @@ public class AddressController {
                 .stateName(addressEntity.getState().getStateName());
         addressList.setState(addressListState);
         return addressList;
+    }
+
+    /**
+     * RestController method called when the request pattern is of type '/address/{address_id}'
+     * and the incoming request is of 'DELETE' type
+     * Delete the address from the database for a customer
+     *
+     * @param authorization - String represents authorization token
+     * @param addressId     - Address UUID to be deleted from the database
+     * @return - ResponseEntity (DeleteAddressResponse along with HTTP status code)
+     * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
+     *                                      the session has already expired
+     * @throws AddressNotFoundException     - if the address UUID is empty, or incorrect
+     */
+    @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<DeleteAddressResponse> deleteSavedAddress(@RequestHeader("authorization") final String authorization,
+                                                                    @PathVariable("address_id") final String addressId)
+            throws AuthorizationFailedException, AddressNotFoundException {
+
+        String accessToken = authorization.split("Bearer ")[1];
+        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+
+        // Throw exception if the address UUID is empty
+        if (commonValidation.isEmptyFieldValue(addressId)) {
+            throw new AddressNotFoundException("ANF-005", "Address id can not be empty");
+        }
+
+        AddressEntity addressEntity = addressService.getAddressByUUID(addressId, customerEntity);
+        AddressEntity deletedAddressEntity = addressService.deleteAddress(addressEntity);
+
+        DeleteAddressResponse deleteAddressResponse = new DeleteAddressResponse()
+                .id(UUID.fromString(deletedAddressEntity.getUuid()))
+                .status("ADDRESS DELETED SUCCESSFULLY");
+
+        return new ResponseEntity<DeleteAddressResponse>(deleteAddressResponse, HttpStatus.OK);
+
+    }
+    /**
+     * Method to get getAllStates method in addressService and returns list of stateEntity.
+     *
+     * Any user can access this stateList
+     *
+     * @return - ResponseEntity<StatesListResponse>
+     */
+    @RequestMapping(method = RequestMethod.GET,path = "/states",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+
+    public ResponseEntity<StatesListResponse> getAllStates(){
+
+
+        List<StateEntity> stateEntities = addressService.getAllStates();
+
+        if(!stateEntities.isEmpty()) {//Checking if StateEntities is empty.
+            //Creates List of StateList using Model StateList.
+            List<StatesList> statesLists = new ArrayList<> ();
+            //looping in to get details of all the the stateEntity & then create a stateList and add UUID of state and stateName and add the newly created StateList to the list of StateList.
+            stateEntities.forEach(stateEntity -> {
+                StatesList statesList = new StatesList()
+                        .id(UUID.fromString(stateEntity.getUuid ()))
+                        .stateName(stateEntity.getStateName());
+                statesLists.add(statesList);
+            });
+
+            //Creating StatesListResponse and adding list of stateLists
+            StatesListResponse statesListResponse = new StatesListResponse().states(statesLists);
+            return new ResponseEntity<StatesListResponse>(statesListResponse, HttpStatus.OK);
+        }else
+            //Return empty set if stateEntities is empty.
+            return new ResponseEntity<StatesListResponse>(new StatesListResponse(),HttpStatus.OK);
     }
 }
