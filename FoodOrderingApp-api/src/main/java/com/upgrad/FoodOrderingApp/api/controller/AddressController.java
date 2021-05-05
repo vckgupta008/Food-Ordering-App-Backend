@@ -133,6 +133,43 @@ public class AddressController {
         addressList.setState(addressListState);
         return addressList;
     }
+
+    /**
+     * RestController method called when the request pattern is of type '/address/{address_id}'
+     * and the incoming request is of 'DELETE' type
+     * Delete the address from the database for a customer
+     *
+     * @param authorization - String represents authorization token
+     * @param addressId     - Address UUID to be deleted from the database
+     * @return - ResponseEntity (DeleteAddressResponse along with HTTP status code)
+     * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
+     *                                      the session has already expired
+     * @throws AddressNotFoundException     - if the address UUID is empty, or incorrect
+     */
+    @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<DeleteAddressResponse> deleteSavedAddress(@RequestHeader("authorization") final String authorization,
+                                                                    @PathVariable("address_id") final String addressId)
+            throws AuthorizationFailedException, AddressNotFoundException {
+
+        String accessToken = authorization.split("Bearer ")[1];
+        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+
+        // Throw exception if the address UUID is empty
+        if (commonValidation.isEmptyFieldValue(addressId)) {
+            throw new AddressNotFoundException("ANF-005", "Address id can not be empty");
+        }
+
+        AddressEntity addressEntity = addressService.getAddressByUUID(addressId, customerEntity);
+        AddressEntity deletedAddressEntity = addressService.deleteAddress(addressEntity);
+
+        DeleteAddressResponse deleteAddressResponse = new DeleteAddressResponse()
+                .id(UUID.fromString(deletedAddressEntity.getUuid()))
+                .status("ADDRESS DELETED SUCCESSFULLY");
+
+        return new ResponseEntity<DeleteAddressResponse>(deleteAddressResponse, HttpStatus.OK);
+
+    }
     /**
      * Method to get getAllStates method in addressService and returns list of stateEntity.
      *
