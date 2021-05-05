@@ -58,7 +58,7 @@ public class AddressService {
     public AddressEntity saveAddress(final AddressEntity addressEntity, final CustomerEntity customerEntity) throws SaveAddressException {
 
         // Throw exception if any of the required field is Empty
-        if (commonValidation.isEmptyFieldValue((addressEntity.getFlatBuildNum()))
+        if (commonValidation.isEmptyFieldValue((addressEntity.getFlatBuilNo()))
                 || commonValidation.isEmptyFieldValue(addressEntity.getLocality())
                 || commonValidation.isEmptyFieldValue(addressEntity.getCity())
                 || commonValidation.isEmptyFieldValue(addressEntity.getPincode())
@@ -72,12 +72,10 @@ public class AddressService {
             throw new SaveAddressException("SAR-002", "Invalid pincode");
         }
 
+        List<CustomerEntity> customerEntities = new ArrayList<>();
+        customerEntities.add(customerEntity);
+        addressEntity.setCustomers(customerEntities);
         AddressEntity savedAddressEntity = addressDao.saveAddress(addressEntity);
-
-        CustomerAddressEntity customerAddressEntity = new CustomerAddressEntity();
-        customerAddressEntity.setCustomer(customerEntity);
-        customerAddressEntity.setAddress(savedAddressEntity);
-        addressDao.saveCustomerAddr(customerAddressEntity);
 
         return savedAddressEntity;
     }

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,7 +67,7 @@ public class RestaurantController {
             RestaurantDetailsResponseAddress responseAddress = new RestaurantDetailsResponseAddress();
             AddressEntity addressEntity = restaurantEntity.getAddress();
             responseAddress.setId(UUID.fromString(addressEntity.getUuid()));
-            responseAddress.setFlatBuildingName(addressEntity.getFlatBuildNum());
+            responseAddress.setFlatBuildingName(addressEntity.getFlatBuilNo());
             responseAddress.setLocality(addressEntity.getLocality());
             responseAddress.setCity(addressEntity.getCity());
             responseAddress.setPincode(addressEntity.getPincode());
@@ -138,7 +137,7 @@ public class RestaurantController {
             RestaurantDetailsResponseAddress responseAddress = new RestaurantDetailsResponseAddress();
             AddressEntity addressEntity = restaurantEntity.getAddress();
             responseAddress.setId(UUID.fromString(addressEntity.getUuid()));
-            responseAddress.setFlatBuildingName(addressEntity.getFlatBuildNum());
+            responseAddress.setFlatBuildingName(addressEntity.getFlatBuilNo());
             responseAddress.setLocality(addressEntity.getLocality());
             responseAddress.setCity(addressEntity.getCity());
             responseAddress.setPincode(addressEntity.getPincode());

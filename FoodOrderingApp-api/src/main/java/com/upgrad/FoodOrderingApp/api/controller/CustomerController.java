@@ -65,10 +65,10 @@ public class CustomerController {
         customerEntity.setContactNumber(signupCustomerRequest.getContactNumber());
         customerEntity.setPassword(signupCustomerRequest.getPassword());
 
-        customerService.saveCustomer(customerEntity);
+        CustomerEntity createdCustomerEntity = customerService.saveCustomer(customerEntity);
 
         SignupCustomerResponse customerResponse = new SignupCustomerResponse()
-                .id(customerEntity.getUuid())
+                .id(createdCustomerEntity.getUuid())
                 .status("CUSTOMER SUCCESSFULLY REGISTERED");
 
         return new ResponseEntity<SignupCustomerResponse>(customerResponse, HttpStatus.CREATED);

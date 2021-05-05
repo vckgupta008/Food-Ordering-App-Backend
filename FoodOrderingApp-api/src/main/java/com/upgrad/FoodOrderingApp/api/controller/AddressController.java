@@ -10,8 +10,6 @@ import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
-import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -64,7 +61,7 @@ public class AddressController {
         // Set fields into AddressEntity
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setUuid(UUID.randomUUID().toString());
-        addressEntity.setFlatBuildNum(saveAddressRequest.getFlatBuildingName());
+        addressEntity.setFlatBuilNo(saveAddressRequest.getFlatBuildingName());
         addressEntity.setLocality(saveAddressRequest.getLocality());
         addressEntity.setCity(saveAddressRequest.getCity());
         addressEntity.setPincode(saveAddressRequest.getPincode());
@@ -86,7 +83,7 @@ public class AddressController {
      * Get all the saved address from the database for a customer
      *
      * @param authorization - String represents authorization token
-     * @return - AddressListResponse containing customer's address
+     * @return - ResponseEntity (AddressListResponse containing customer's address, along with HTTP status code)
      * @throws AuthorizationFailedException - if the access token is not valid/ customer has already logged out/
      *                                      the session has already expired
      */
@@ -123,7 +120,7 @@ public class AddressController {
         AddressList addressList = new AddressList();
         AddressEntity addressEntity = (AddressEntity) address;
         addressList.setId(UUID.fromString(addressEntity.getUuid()));
-        addressList.setFlatBuildingName(addressEntity.getFlatBuildNum());
+        addressList.setFlatBuildingName(addressEntity.getFlatBuilNo());
         addressList.setLocality(addressEntity.getLocality());
         addressList.setCity(addressEntity.getCity());
         addressList.setPincode(addressEntity.getPincode());
