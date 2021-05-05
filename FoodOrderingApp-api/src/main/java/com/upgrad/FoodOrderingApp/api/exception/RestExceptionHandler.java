@@ -98,7 +98,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Method to handle CouponNotFoundException if user does not exist in the database
+     * Method to handle CouponNotFoundException if coupon does not exist in the database
      *
      * @param excp      - CouponNotFoundException
      * @param request   - WebRequest
@@ -111,7 +111,7 @@ public class RestExceptionHandler {
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
     /**
-     * Method to handle CategoryNotFoundException if user does not exist in the database
+     * Method to handle CategoryNotFoundException if category does not exist in the database
      *
      * @param excp      - CategoryNotFoundException
      * @param request   - WebRequest
@@ -123,5 +123,17 @@ public class RestExceptionHandler {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
-
+    /**
+     * Method to handle RestaurantNotFoundException if user does not exist in the database
+     *
+     * @param excp      - RestaurantNotFoundException
+     * @param request   - WebRequest
+     * @return          - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(RestaurantNotFoundException.class)
+    public ResponseEntity<ErrorResponse> restaurantNotFoundException(
+            final RestaurantNotFoundException excp, final WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
 }

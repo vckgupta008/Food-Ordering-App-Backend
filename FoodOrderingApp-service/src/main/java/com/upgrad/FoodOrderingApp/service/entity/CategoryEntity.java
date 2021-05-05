@@ -37,6 +37,9 @@ public class CategoryEntity implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "categories")
     private List<ItemEntity> items;
 
+//    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
+//    private List<RestaurantEntity> restaurants;
+
     public String getCategoryName() {
         return categoryName;
     }

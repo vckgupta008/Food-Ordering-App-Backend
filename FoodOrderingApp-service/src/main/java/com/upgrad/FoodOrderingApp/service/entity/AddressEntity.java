@@ -18,6 +18,18 @@ import java.util.List;
 @Table(name = "address")
 public class AddressEntity implements Serializable {
 
+    public AddressEntity() {
+    }
+
+    public AddressEntity(@NotNull String uuid, String flatBuildNum, String locality, String city, String pincode, StateEntity state) {
+        this.uuid = uuid;
+        this.flatBuildNum = flatBuildNum;
+        this.locality = locality;
+        this.city = city;
+        this.pincode = pincode;
+        this.state = state;
+    }
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
