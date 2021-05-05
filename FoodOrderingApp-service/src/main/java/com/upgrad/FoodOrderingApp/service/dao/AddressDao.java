@@ -70,4 +70,46 @@ public class AddressDao {
         }
         return addresses;
     }
+    /**
+     * Method to get AddressEntity for the given address UUID
+     *
+     * @param addressUuid - Address UUID
+     * @return AddressEntity object
+     */
+    public AddressEntity getAddressByUUID(final String addressUuid) {
+        try {
+            return entityManager.createNamedQuery("addressByUuid", AddressEntity.class)
+                    .setParameter("addressUuid", addressUuid)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    /**
+     * Method to get CustomerAddressEntity for the given address and customer object
+     *
+     * @param address  - AddressEntity object
+     * @param customer - CustomerEntity object
+     * @return CustomerAddressEntity object if found in the database, else return null
+     */
+    public CustomerAddressEntity getCustomerAddress(AddressEntity address, CustomerEntity customer) {
+        try {
+            return entityManager.createNamedQuery("customerAddressByCustIDAddrID", CustomerAddressEntity.class)
+                    .setParameter("customer", customer)
+                    .setParameter("address", address)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    /**
+     * Method to delete AddressEntity object from the database
+     *
+     * @param addressEntity - AddressEntity to be deleted
+     */
+    public void deleteAddress(AddressEntity addressEntity) {
+        entityManager.remove(addressEntity);
+    }
 }
