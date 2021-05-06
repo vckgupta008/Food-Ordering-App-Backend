@@ -110,6 +110,7 @@ public class RestExceptionHandler {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
+
     /**
      * Method to handle CategoryNotFoundException if category does not exist in the database
      *
@@ -123,6 +124,7 @@ public class RestExceptionHandler {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
+
     /**
      * Method to handle RestaurantNotFoundException if user does not exist in the database
      *
@@ -133,6 +135,34 @@ public class RestExceptionHandler {
     @ExceptionHandler(RestaurantNotFoundException.class)
     public ResponseEntity<ErrorResponse> restaurantNotFoundException(
             final RestaurantNotFoundException excp, final WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Method to handle PaymentMethodNotFoundException if user does not exist in the database
+     *
+     * @param excp      - PaymentMethodNotFoundException
+     * @param request   - WebRequest
+     * @return          - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(PaymentMethodNotFoundException.class)
+    public ResponseEntity<ErrorResponse> paymentMethodNotFoundException(
+            final PaymentMethodNotFoundException excp, final WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Method to handle ItemNotFoundException if user does not exist in the database
+     *
+     * @param excp      - ItemNotFoundException
+     * @param request   - WebRequest
+     * @return          - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<ErrorResponse> itemNotFoundException(
+            final ItemNotFoundException excp, final WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
