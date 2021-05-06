@@ -44,4 +44,21 @@ public class RestaurantDao {
         }
     }
 
+    /**
+     * Method to get all restaurants category entity using category uuid
+     *
+     * @return - list of get all restaurants category entity using category uuid
+     */
+    public List<RestaurantCategoryEntity> restaurantsByCategoryId(String categoryUuid) {
+        try {
+            return entityManager.createNamedQuery("getRestaurantsByCategory", RestaurantCategoryEntity.class)
+                    .setParameter("categoryUuid",categoryUuid)
+                    .getResultList();
+        } catch(NoResultException nre) {
+            return null;
+        }
+    }
+
+
+
 }
