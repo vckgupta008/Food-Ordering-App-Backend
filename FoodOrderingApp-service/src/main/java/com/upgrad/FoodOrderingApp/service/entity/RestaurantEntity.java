@@ -1,5 +1,9 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -7,18 +11,27 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.List;
+
+/**
+ * The RestaurantEntity class is mapped to table 'restaurant' in database
+ * All the columns are mapped to its respective attributes of the class
+ */
 
 @Entity
 @Table(name = "restaurant")
 @NamedQueries(
         {
-                @NamedQuery(name = "allRestaurants", query = "select r from RestaurantEntity r order by r.customerRating desc"),
-                @NamedQuery(name = "restaurantsByName", query = "select r from RestaurantEntity  r where lower(r.restaurantName) like :restaurantName order by r.restaurantName"),
+                @NamedQuery(name = "allRestaurants",
+                        query = "select r from RestaurantEntity r order by r.customerRating desc"),
+                @NamedQuery(name = "restaurantsByName",
+                        query = "select r from RestaurantEntity  r where lower(r.restaurantName) like :restaurantName order by r.restaurantName"),
+                @NamedQuery(name = "restaurantByUuid",
+                        query = "select r from RestaurantEntity r where r.uuid = :restaurantUuid")
         }
 )
 public class RestaurantEntity implements Serializable {
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -130,6 +143,21 @@ public class RestaurantEntity implements Serializable {
 
     public void setCategories(List<CategoryEntity> categories) {
         this.categories = categories;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return new EqualsBuilder().append(this, obj).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(this).hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
 }

@@ -14,15 +14,26 @@ public class PaymentDao {
     private EntityManager entityManager;
 
     /**
-     * This method helps find all available payment methods
+     * Method to retrieve all payment methods available in the database
      *
-     * @return List<PaymentEntity> object
+     * @return - List of PaymentEntity object
      */
-
-    //List all payment methods available in DB
     public List<PaymentEntity> getAllPaymentMethods() {
+        return entityManager.createNamedQuery("allPaymentMethods", PaymentEntity.class)
+                .getResultList();
+    }
+
+    /**
+     * Method to get PaymentEntity for the given payment uuid
+     *
+     * @param paymentUuid - STring represents payment UUID
+     * @return PaymentEntity if found in the database, else return null
+     */
+    public PaymentEntity getPaymentByUUID(final String paymentUuid) {
         try {
-            return this.entityManager.createNamedQuery ( "allPaymentMethods" , PaymentEntity.class ).getResultList ();
+            return this.entityManager.createNamedQuery("paymentByUUID", PaymentEntity.class)
+                    .setParameter("paymentUUID", paymentUuid)
+                    .getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }

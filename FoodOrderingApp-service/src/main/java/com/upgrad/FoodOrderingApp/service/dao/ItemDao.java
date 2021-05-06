@@ -13,15 +13,15 @@ public class ItemDao {
     private EntityManager entityManager;
 
     /**
-     * Get  item details using item id
+     * Get  item details using item uuid
      *
-     * @param itemId - String represents item id
-     * @return - item details using item id
+     * @param itemUuid - String represents item uuid
+     * @return - item details using item uuid
      */
-    public ItemEntity getItemById(Integer itemId) {
+    public ItemEntity getItemById(final String itemUuid) {
         try {
-            return entityManager.createNamedQuery("getItemById", ItemEntity.class)
-                    .setParameter("itemId", itemId)
+            return entityManager.createNamedQuery("itemById", ItemEntity.class)
+                    .setParameter("itemUuid", itemUuid)
                     .getSingleResult();
         } catch (NoResultException nre) {
             return null;
