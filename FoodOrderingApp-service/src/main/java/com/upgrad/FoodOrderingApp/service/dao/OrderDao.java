@@ -1,5 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
+import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderItemEntity;
@@ -91,6 +92,12 @@ public class OrderDao {
     public List<OrderItemEntity> getOrderItemsByOrderUuid(final String orderUuid) {
         return entityManager.createNamedQuery("orderItemsByOrder", OrderItemEntity.class)
                 .setParameter("orderUuid", orderUuid)
+                .getResultList();
+    }
+
+    public List<OrderEntity> getOrdersByAddress(AddressEntity addressEntity) {
+        return entityManager.createNamedQuery("ordersByAddress", OrderEntity.class)
+                .setParameter("addressUuid", addressEntity.getUuid())
                 .getResultList();
     }
 }

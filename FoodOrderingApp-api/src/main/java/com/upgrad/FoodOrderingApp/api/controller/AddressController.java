@@ -53,13 +53,13 @@ public class AddressController {
                                                            @RequestBody(required = false) final SaveAddressRequest saveAddressRequest)
             throws AuthorizationFailedException, SaveAddressException, AddressNotFoundException {
 
-        String accessToken = authorization.split("Bearer ")[1];
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        final String accessToken = authorization.split("Bearer ")[1];
+        final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
-        StateEntity state = addressService.getStateByUUID(saveAddressRequest.getStateUuid());
+        final StateEntity state = addressService.getStateByUUID(saveAddressRequest.getStateUuid());
 
         // Set fields into AddressEntity
-        AddressEntity addressEntity = new AddressEntity();
+        final AddressEntity addressEntity = new AddressEntity();
         addressEntity.setUuid(UUID.randomUUID().toString());
         addressEntity.setFlatBuilNo(saveAddressRequest.getFlatBuildingName());
         addressEntity.setLocality(saveAddressRequest.getLocality());
@@ -68,9 +68,9 @@ public class AddressController {
         addressEntity.setActive(1);
         addressEntity.setState(state);
 
-        AddressEntity savedAddressEntity = addressService.saveAddress(addressEntity, customerEntity);
+        final AddressEntity savedAddressEntity = addressService.saveAddress(addressEntity, customerEntity);
 
-        SaveAddressResponse saveAddressResponse = new SaveAddressResponse()
+        final SaveAddressResponse saveAddressResponse = new SaveAddressResponse()
                 .id(savedAddressEntity.getUuid())
                 .status("ADDRESS SUCCESSFULLY REGISTERED");
 
@@ -92,18 +92,17 @@ public class AddressController {
     public ResponseEntity<AddressListResponse> getAllAddress(@RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException {
 
-        String accessToken = authorization.split("Bearer ")[1];
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        final String accessToken = authorization.split("Bearer ")[1];
+        final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
-        List<AddressEntity> allAddress = addressService.getAllAddress(customerEntity);
-        List<AddressList> addressLists = new ArrayList<>();
+        final List<AddressEntity> allAddress = addressService.getAllAddress(customerEntity);
+        final List<AddressList> addressLists = new ArrayList<>();
         if (!allAddress.isEmpty()) {
             allAddress.forEach(
                     address -> addressLists.add(setAddressList(address)));
-        }
-        ;
+        };
 
-        AddressListResponse addressListResponse = new AddressListResponse()
+        final AddressListResponse addressListResponse = new AddressListResponse()
                 .addresses(addressLists);
 
         return new ResponseEntity<AddressListResponse>(addressListResponse, HttpStatus.OK);
@@ -117,17 +116,17 @@ public class AddressController {
      * @return - AddressList
      */
     private AddressList setAddressList(Object address) {
-        AddressList addressList = new AddressList();
+        final AddressList addressList = new AddressList();
         AddressEntity addressEntity = (AddressEntity) address;
-        addressList.setId(UUID.fromString(addressEntity.getUuid()));
-        addressList.setFlatBuildingName(addressEntity.getFlatBuilNo());
-        addressList.setLocality(addressEntity.getLocality());
-        addressList.setCity(addressEntity.getCity());
-        addressList.setPincode(addressEntity.getPincode());
+        addressList.id(UUID.fromString(addressEntity.getUuid()));
+        addressList.flatBuildingName(addressEntity.getFlatBuilNo());
+        addressList.locality(addressEntity.getLocality());
+        addressList.city(addressEntity.getCity());
+        addressList.pincode(addressEntity.getPincode());
         AddressListState addressListState = new AddressListState();
         addressListState.id(UUID.fromString(addressEntity.getState().getUuid()))
                 .stateName(addressEntity.getState().getStateName());
-        addressList.setState(addressListState);
+        addressList.state(addressListState);
         return addressList;
     }
 
@@ -149,16 +148,16 @@ public class AddressController {
                                                                     @PathVariable("address_id") final String addressId)
             throws AuthorizationFailedException, AddressNotFoundException {
 
-        String accessToken = authorization.split("Bearer ")[1];
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        final String accessToken = authorization.split("Bearer ")[1];
+        final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
         // Throw exception if the address UUID is empty
         if (commonValidation.isEmptyFieldValue(addressId)) {
             throw new AddressNotFoundException("ANF-005", "Address id can not be empty");
         }
 
-        AddressEntity addressEntity = addressService.getAddressByUUID(addressId, customerEntity);
-        AddressEntity deletedAddressEntity = addressService.deleteAddress(addressEntity);
+        final AddressEntity addressEntity = addressService.getAddressByUUID(addressId, customerEntity);
+        final AddressEntity deletedAddressEntity = addressService.deleteAddress(addressEntity);
 
         DeleteAddressResponse deleteAddressResponse = new DeleteAddressResponse()
                 .id(UUID.fromString(deletedAddressEntity.getUuid()))
@@ -167,36 +166,33 @@ public class AddressController {
         return new ResponseEntity<DeleteAddressResponse>(deleteAddressResponse, HttpStatus.OK);
 
     }
+
     /**
-     * Method to get getAllStates method in addressService and returns list of stateEntity.
-     *
+     * RestController method called when the request pattern is of type '/states'
+     * and the incoming request is of 'GET' type
+     * Retrieve all states from the database
      * Any user can access this stateList
      *
-     * @return - ResponseEntity<StatesListResponse>
+     * @return - ResponseEntity(StatesListResponse along with HTTP status code)
      */
-    @RequestMapping(method = RequestMethod.GET,path = "/states",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = "/states",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<StatesListResponse> getAllStates() {
 
-    public ResponseEntity<StatesListResponse> getAllStates(){
+        final List<StateEntity> stateEntities = addressService.getAllStates();
 
-
-        List<StateEntity> stateEntities = addressService.getAllStates();
-
-        if(!stateEntities.isEmpty()) {//Checking if StateEntities is empty.
-            //Creates List of StateList using Model StateList.
-            List<StatesList> statesLists = new ArrayList<> ();
-            //looping in to get details of all the the stateEntity & then create a stateList and add UUID of state and stateName and add the newly created StateList to the list of StateList.
+        final StatesListResponse statesListResponse = new StatesListResponse();
+        if (!stateEntities.isEmpty()) {
+            final List<StatesList> statesLists = new ArrayList<>();
             stateEntities.forEach(stateEntity -> {
-                StatesList statesList = new StatesList()
-                        .id(UUID.fromString(stateEntity.getUuid ()))
+                final StatesList statesList = new StatesList()
+                        .id(UUID.fromString(stateEntity.getUuid()))
                         .stateName(stateEntity.getStateName());
                 statesLists.add(statesList);
             });
+            statesListResponse.states(statesLists);
+        }
 
-            //Creating StatesListResponse and adding list of stateLists
-            StatesListResponse statesListResponse = new StatesListResponse().states(statesLists);
-            return new ResponseEntity<StatesListResponse>(statesListResponse, HttpStatus.OK);
-        }else
-            //Return empty set if stateEntities is empty.
-            return new ResponseEntity<StatesListResponse>(new StatesListResponse(),HttpStatus.OK);
+        return new ResponseEntity<StatesListResponse>(statesListResponse, HttpStatus.OK);
     }
 }

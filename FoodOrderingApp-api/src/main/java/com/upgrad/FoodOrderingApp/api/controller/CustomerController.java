@@ -197,7 +197,8 @@ public class CustomerController {
      *                                      or old password is invalid
      */
     @RequestMapping(method = RequestMethod.PUT, path = "/customer/password",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String authorization,
                                                                          @RequestBody(required = false) final UpdatePasswordRequest updatePasswordRequest)
             throws AuthorizationFailedException, UpdateCustomerException {

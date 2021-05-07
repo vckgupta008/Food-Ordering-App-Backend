@@ -24,7 +24,7 @@ public class AddressDao {
      * @param stateUuid - STring represents state uuid
      * @return - StateEntity if exists in the database, else return null
      */
-    public StateEntity getStateByUUID(String stateUuid) {
+    public StateEntity getStateByUUID(final String stateUuid) {
         try {
             return entityManager.createNamedQuery("stateByUUID", StateEntity.class)
                     .setParameter("stateUuid", stateUuid)
@@ -40,7 +40,7 @@ public class AddressDao {
      * @param addressEntity - AddressEntity to be persisted in the database
      * @return - saved AddressEntity
      */
-    public AddressEntity saveAddress(AddressEntity addressEntity) {
+    public AddressEntity saveAddress(final AddressEntity addressEntity) {
         entityManager.persist(addressEntity);
         return addressEntity;
     }
@@ -50,7 +50,7 @@ public class AddressDao {
      *
      * @param customerAddressEntity - CustomerAddressEntity to be persisted in the database
      */
-    public void saveCustomerAddr(CustomerAddressEntity customerAddressEntity) {
+    public void saveCustomerAddr(final CustomerAddressEntity customerAddressEntity) {
         entityManager.persist(customerAddressEntity);
     }
 
@@ -61,15 +61,13 @@ public class AddressDao {
      * @return - List of CustomerAddressEntity
      */
     public List<CustomerAddressEntity> getAllAddress(final CustomerEntity customerEntity) {
-        List<CustomerAddressEntity> addresses = entityManager
+        final List<CustomerAddressEntity> addresses = entityManager
                 .createNamedQuery("customerAddressByCustomer", CustomerAddressEntity.class)
-                .setParameter("customer", customerEntity)
+                .setParameter("customerId", customerEntity.getId())
                 .getResultList();
-        if (addresses == null) {
-            return Collections.emptyList();
-        }
         return addresses;
     }
+
     /**
      * Method to get AddressEntity for the given address UUID
      *
@@ -93,11 +91,11 @@ public class AddressDao {
      * @param customer - CustomerEntity object
      * @return CustomerAddressEntity object if found in the database, else return null
      */
-    public CustomerAddressEntity getCustomerAddress(AddressEntity address, CustomerEntity customer) {
+    public CustomerAddressEntity getCustomerAddress(final AddressEntity address, final CustomerEntity customer) {
         try {
             return entityManager.createNamedQuery("customerAddressByCustIDAddrID", CustomerAddressEntity.class)
-                    .setParameter("customer", customer)
-                    .setParameter("address", address)
+                    .setParameter("customerId", customer.getId())
+                    .setParameter("addressId", address.getId())
                     .getSingleResult();
         } catch (NoResultException nre) {
             return null;
@@ -109,7 +107,18 @@ public class AddressDao {
      *
      * @param addressEntity - AddressEntity to be deleted
      */
-    public void deleteAddress(AddressEntity addressEntity) {
+    public void deleteAddress(final AddressEntity addressEntity) {
         entityManager.remove(addressEntity);
+    }
+
+    /**
+     * Method to update AddressEntity in the database
+     *
+     * @param addressEntity - AddressEntity object to be updated
+     * @return - Updated AddressEntity object
+     */
+    public AddressEntity updateAddress(final AddressEntity addressEntity) {
+        final AddressEntity updatedAddressEntity = entityManager.merge(addressEntity);
+        return updatedAddressEntity;
     }
 }
