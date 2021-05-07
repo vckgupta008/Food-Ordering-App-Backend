@@ -90,10 +90,14 @@ public class RestaurantService {
     public RestaurantEntity restaurantByUUID(final String restaurantUuid) throws RestaurantNotFoundException {
         RestaurantEntity restaurantEntity = restaurantDao.restaurantByUUID(restaurantUuid);
         // Throw exception if no restaurant in found in the database for the given restaurant uuid
+
+        if(restaurantUuid.isEmpty()){
+            throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");
+        }
+
         if (restaurantEntity == null) {
             throw new RestaurantNotFoundException("RNF-001", "No restaurant by this id");
         }
         return restaurantEntity;
     }
-
 }
