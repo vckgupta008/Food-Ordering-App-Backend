@@ -1,5 +1,9 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,10 +16,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * PaymentEntity class contains all the attributes to be mapped to all the fields in 'payment' table in the database
+ * The PaymentEntity class is mapped to table 'payment' in database
+ * All the columns are mapped to its respective attributes of the class
  */
+
 @Entity
-@Table(name = "PAYMENT")
+@Table(name = "payment")
 @NamedQueries({
         @NamedQuery(name = "allPaymentMethods", query = "select p from PaymentEntity p"),
         @NamedQuery(name = "paymentByUUID", query = "select p from PaymentEntity p where p.uuid = :paymentUUID")
@@ -23,16 +29,16 @@ import javax.validation.constraints.Size;
 public class PaymentEntity {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "uuid", unique = true)
+    @Column(name = "UUID", unique = true)
     @NotNull
     @Size(max = 200)
     private String uuid;
 
-    @Column(name = "payment_name")
+    @Column(name = "PAYMENT_NAME")
     @Size(max = 255)
     private String paymentName;
 
@@ -67,5 +73,38 @@ public class PaymentEntity {
 
     public void setPaymentName(String paymentName) {
         this.paymentName = paymentName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PaymentEntity that = (PaymentEntity) o;
+
+        return new EqualsBuilder()
+                .append(id, that.id)
+                .append(uuid, that.uuid)
+                .append(paymentName, that.paymentName)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(uuid)
+                .append(paymentName)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("uuid", uuid)
+                .append("paymentName", paymentName)
+                .toString();
     }
 }

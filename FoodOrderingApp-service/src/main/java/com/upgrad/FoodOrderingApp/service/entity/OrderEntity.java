@@ -18,6 +18,12 @@ import java.util.Date;
 
 @Entity
 @Table(name = "orders")
+@NamedQueries(
+        {
+                @NamedQuery(name = "orderByCustomers",
+                        query = "select o from OrderEntity o where o.customer.uuid = :customerUuid order by o.date desc")
+        }
+)
 public class OrderEntity implements Serializable {
 
     public OrderEntity() {
@@ -51,7 +57,7 @@ public class OrderEntity implements Serializable {
     @NotNull
     private Double bill;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COUPON_ID")
     private CouponEntity coupon;
 
@@ -62,21 +68,21 @@ public class OrderEntity implements Serializable {
     @NotNull
     private Date date;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PAYMENT_ID")
     private PaymentEntity payment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CUSTOMER_ID")
     @NotNull
     private CustomerEntity customer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ADDRESS_ID")
     @NotNull
     private AddressEntity address;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RESTAURANT_ID")
     @NotNull
     private RestaurantEntity restaurant;
@@ -162,17 +168,56 @@ public class OrderEntity implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OrderEntity that = (OrderEntity) o;
+
+        return new EqualsBuilder()
+                .append(id, that.id)
+                .append(uuid, that.uuid)
+                .append(bill, that.bill)
+                .append(coupon, that.coupon)
+                .append(discount, that.discount)
+                .append(date, that.date)
+                .append(payment, that.payment)
+                .append(customer, that.customer)
+                .append(address, that.address)
+                .append(restaurant, that.restaurant)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(uuid)
+                .append(bill)
+                .append(coupon)
+                .append(discount)
+                .append(date)
+                .append(payment)
+                .append(customer)
+                .append(address)
+                .append(restaurant)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("uuid", uuid)
+                .append("bill", bill)
+                .append("coupon", coupon)
+                .append("discount", discount)
+                .append("date", date)
+                .append("payment", payment)
+                .append("customer", customer)
+                .append("address", address)
+                .append("restaurant", restaurant)
+                .toString();
     }
 }

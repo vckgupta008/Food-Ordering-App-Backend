@@ -3,7 +3,6 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,7 +19,7 @@ import java.io.Serializable;
 @NamedQueries(
         {
                 @NamedQuery(name = "couponByCouponName",
-                        query = "select c from CouponEntity c where c.coupon_name = :couponName"),
+                        query = "select c from CouponEntity c where c.couponName = :couponName"),
                 @NamedQuery(name = "couponByUuid",
                         query = "select c from CouponEntity c where c.uuid = :uuid")
         }
@@ -32,7 +31,7 @@ public class CouponEntity implements Serializable {
 
     public CouponEntity(@NotNull String uuid, String coupon_name, @NotNull Integer percent) {
         this.uuid = uuid;
-        this.coupon_name = coupon_name;
+        this.couponName = coupon_name;
         this.percent = percent;
     }
 
@@ -48,7 +47,7 @@ public class CouponEntity implements Serializable {
 
     @Column(name = "COUPON_NAME")
     @Size(max = 255)
-    private String coupon_name;
+    private String couponName;
 
     @Column(name = "PERCENT")
     @NotNull
@@ -70,12 +69,12 @@ public class CouponEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    public String getCoupon_name() {
-        return coupon_name;
+    public String getCouponName() {
+        return couponName;
     }
 
-    public void setCoupon_name(String coupon_name) {
-        this.coupon_name = coupon_name;
+    public void setCouponName(String coupon_name) {
+        this.couponName = coupon_name;
     }
 
     public Integer getPercent() {
@@ -87,18 +86,38 @@ public class CouponEntity implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CouponEntity that = (CouponEntity) o;
+
+        return new EqualsBuilder()
+                .append(id, that.id)
+                .append(uuid, that.uuid)
+                .append(couponName, that.couponName)
+                .append(percent, that.percent)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(uuid)
+                .append(couponName)
+                .append(percent)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("uuid", uuid)
+                .append("couponName", couponName)
+                .append("percent", percent)
+                .toString();
     }
-
 }
