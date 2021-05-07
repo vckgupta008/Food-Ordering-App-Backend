@@ -46,7 +46,7 @@ public class CustomerService {
     public CustomerEntity saveCustomer(final CustomerEntity customerEntity) throws SignUpRestrictedException {
 
         // Throw exception if email Id pattern does not match the pattern
-        boolean isValidEmail = isValidPattern(EMAIL_PATTERN, customerEntity.getEmail());
+        final boolean isValidEmail = isValidPattern(EMAIL_PATTERN, customerEntity.getEmail());
         if (!isValidEmail) {
             throw new SignUpRestrictedException("SGR-002", "Invalid email-id format!");
         }
@@ -64,7 +64,7 @@ public class CustomerService {
         }
 
         // Throw exception if customer record exists in the database with the given contact number
-        CustomerEntity custEntityByPhnNum = customerDao.getCustomerByContactNum(customerEntity.getContactNumber());
+        final CustomerEntity custEntityByPhnNum = customerDao.getCustomerByContactNum(customerEntity.getContactNumber());
         if (custEntityByPhnNum != null) {
             throw new SignUpRestrictedException("SGR-001", "This contact number is already registered! Try other contact number.");
         }
@@ -87,7 +87,7 @@ public class CustomerService {
     public CustomerAuthEntity authenticate(final String contactNum, final String password)
             throws AuthenticationFailedException {
 
-        CustomerEntity customerEntity = customerDao.getCustomerByContactNum(contactNum);
+        final CustomerEntity customerEntity = customerDao.getCustomerByContactNum(contactNum);
 
         // If customer does not exists with the provided contact, throw exception
         if (customerEntity == null) {
@@ -103,7 +103,7 @@ public class CustomerService {
         // Generate JWT auth token
         JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
 
-        CustomerAuthEntity authEntity = new CustomerAuthEntity();
+        final CustomerAuthEntity authEntity = new CustomerAuthEntity();
         authEntity.setUuid(UUID.randomUUID().toString());
         authEntity.setCustomer(customerEntity);
         final ZonedDateTime now = ZonedDateTime.now();
@@ -127,7 +127,7 @@ public class CustomerService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
-        CustomerAuthEntity authEntity = commonValidation.validateCustomerAuthEntity(accessToken);
+        final CustomerAuthEntity authEntity = commonValidation.validateCustomerAuthEntity(accessToken);
         final ZonedDateTime now = ZonedDateTime.now();
         authEntity.setLogoutAt(now);
         customerDao.updateCustomerAuth(authEntity);
@@ -143,7 +143,7 @@ public class CustomerService {
      *                                      the session has already expired
      */
     public CustomerEntity getCustomer(final String accessToken) throws AuthorizationFailedException {
-        CustomerAuthEntity authEntity = commonValidation.validateCustomerAuthEntity(accessToken);
+        final CustomerAuthEntity authEntity = commonValidation.validateCustomerAuthEntity(accessToken);
         return authEntity.getCustomer();
     }
 
@@ -155,7 +155,7 @@ public class CustomerService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerEntity updateCustomer(final CustomerEntity customerEntity) {
-        CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
+        final CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
         return updatedCustomerEntity;
     }
 
@@ -187,7 +187,7 @@ public class CustomerService {
 
         // Set encrypted password into CustomerEntity object
         setEncryptedPassword(customerEntity, newPassword);
-        CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
+        final CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
         return updatedCustomerEntity;
 
     }

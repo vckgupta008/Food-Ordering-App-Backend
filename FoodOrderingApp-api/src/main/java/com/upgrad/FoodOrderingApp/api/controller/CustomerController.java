@@ -14,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
-@Controller
+@RestController
 @CrossOrigin
 public class CustomerController {
 
@@ -43,7 +42,8 @@ public class CustomerController {
      *                                   or customer with contact number already exists in the database
      */
     @RequestMapping(method = RequestMethod.POST, path = "/customer/signup",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignupCustomerResponse> signup(
             @RequestBody(required = false) final SignupCustomerRequest signupCustomerRequest)
             throws SignUpRestrictedException {
@@ -65,9 +65,9 @@ public class CustomerController {
         customerEntity.setContactNumber(signupCustomerRequest.getContactNumber());
         customerEntity.setPassword(signupCustomerRequest.getPassword());
 
-        CustomerEntity createdCustomerEntity = customerService.saveCustomer(customerEntity);
+        final CustomerEntity createdCustomerEntity = customerService.saveCustomer(customerEntity);
 
-        SignupCustomerResponse customerResponse = new SignupCustomerResponse()
+        final SignupCustomerResponse customerResponse = new SignupCustomerResponse()
                 .id(createdCustomerEntity.getUuid())
                 .status("CUSTOMER SUCCESSFULLY REGISTERED");
 
@@ -100,10 +100,10 @@ public class CustomerController {
             throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
         }
 
-        CustomerAuthEntity authEntity = customerService.authenticate(decodedArray[0], decodedArray[1]);
-        CustomerEntity customer = authEntity.getCustomer();
+        final CustomerAuthEntity authEntity = customerService.authenticate(decodedArray[0], decodedArray[1]);
+        final CustomerEntity customer = authEntity.getCustomer();
 
-        LoginResponse loginResponse = new LoginResponse()
+        final LoginResponse loginResponse = new LoginResponse()
                 .id(customer.getUuid())
                 .message("LOGGED IN SUCCESSFULLY")
                 .firstName(customer.getFirstName())
@@ -134,11 +134,11 @@ public class CustomerController {
     public ResponseEntity<LogoutResponse> logout(@RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException {
 
-        String accessToken = authorization.split("Bearer ")[1];
-        CustomerAuthEntity authEntity = customerService.logout(accessToken);
-        CustomerEntity customerEntity = authEntity.getCustomer();
+        final String accessToken = authorization.split("Bearer ")[1];
+        final CustomerAuthEntity authEntity = customerService.logout(accessToken);
+        final CustomerEntity customerEntity = authEntity.getCustomer();
 
-        LogoutResponse logoutResponse = new LogoutResponse()
+        final LogoutResponse logoutResponse = new LogoutResponse()
                 .id(customerEntity.getUuid())
                 .message("LOGGED OUT SUCCESSFULLY");
 
@@ -168,13 +168,13 @@ public class CustomerController {
             throw new UpdateCustomerException("UCR-002", "First name field should not be empty");
         }
 
-        String accessToken = authorization.split("Bearer ")[1];
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        final String accessToken = authorization.split("Bearer ")[1];
+        final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
         customerEntity.setFirstName(updateCustomerRequest.getFirstName());
         customerEntity.setLastName(updateCustomerRequest.getLastName());
-        CustomerEntity updatedCustomerEntity = customerService.updateCustomer(customerEntity);
+        final CustomerEntity updatedCustomerEntity = customerService.updateCustomer(customerEntity);
 
-        UpdateCustomerResponse updateCustomerResponse = new UpdateCustomerResponse()
+        final UpdateCustomerResponse updateCustomerResponse = new UpdateCustomerResponse()
                 .id(updatedCustomerEntity.getUuid())
                 .status("CUSTOMER DETAILS UPDATED SUCCESSFULLY")
                 .firstName(updatedCustomerEntity.getFirstName())
@@ -211,12 +211,12 @@ public class CustomerController {
             throw new UpdateCustomerException("UCR-003", "No field should be empty");
         }
 
-        String accessToken = authorization.split("Bearer ")[1];
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
-        CustomerEntity updatedCustomerEntity = customerService.updateCustomerPassword(
+        final String accessToken = authorization.split("Bearer ")[1];
+        final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        final CustomerEntity updatedCustomerEntity = customerService.updateCustomerPassword(
                 oldPassword, newPassword, customerEntity);
 
-        UpdatePasswordResponse updatePasswordResponse = new UpdatePasswordResponse()
+        final UpdatePasswordResponse updatePasswordResponse = new UpdatePasswordResponse()
                 .id(updatedCustomerEntity.getUuid())
                 .status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
 

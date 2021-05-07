@@ -84,7 +84,7 @@ public class CustomerDao {
      * @return - updated CustomerEntity
      */
     public CustomerEntity updateCustomer(final CustomerEntity customerEntity) {
-        CustomerEntity mergedCustomerEntity = entityManager.merge(customerEntity);
+        final CustomerEntity mergedCustomerEntity = entityManager.merge(customerEntity);
         return mergedCustomerEntity;
     }
 }
