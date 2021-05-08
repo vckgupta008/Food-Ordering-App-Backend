@@ -22,7 +22,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(SignUpRestrictedException.class)
     public ResponseEntity<ErrorResponse> signUpRestrictionException(
             final SignUpRestrictedException exp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -37,7 +37,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(AuthenticationFailedException.class)
     public ResponseEntity<ErrorResponse> authenticationFailedException(
             final AuthenticationFailedException exp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.UNAUTHORIZED);
     }
 
@@ -51,7 +51,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(AuthorizationFailedException.class)
     public ResponseEntity<ErrorResponse> authorizationFailedException(
             final AuthorizationFailedException exp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.FORBIDDEN);
     }
 
@@ -65,7 +65,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(UpdateCustomerException.class)
     public ResponseEntity<ErrorResponse> updateCustomerException(
             final UpdateCustomerException exp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -79,7 +79,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(SaveAddressException.class)
     public ResponseEntity<ErrorResponse> saveAddressException(
             final SaveAddressException exp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -93,7 +93,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(AddressNotFoundException.class)
     public ResponseEntity<ErrorResponse> addressNotFoundException(
             final AddressNotFoundException exp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(exp.getCode())
                 .message(exp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
@@ -107,7 +107,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(CouponNotFoundException.class)
     public ResponseEntity<ErrorResponse> couponNotFoundException(
             final CouponNotFoundException excp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
@@ -121,7 +121,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> categoryNotFoundException(
             final CategoryNotFoundException excp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
@@ -135,7 +135,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(RestaurantNotFoundException.class)
     public ResponseEntity<ErrorResponse> restaurantNotFoundException(
             final RestaurantNotFoundException excp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
@@ -149,7 +149,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(PaymentMethodNotFoundException.class)
     public ResponseEntity<ErrorResponse> paymentMethodNotFoundException(
             final PaymentMethodNotFoundException excp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
@@ -163,7 +163,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(ItemNotFoundException.class)
     public ResponseEntity<ErrorResponse> itemNotFoundException(
             final ItemNotFoundException excp, final WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+        return new ResponseEntity<>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 }

@@ -74,7 +74,7 @@ public class AddressController {
                 .id(savedAddressEntity.getUuid())
                 .status("ADDRESS SUCCESSFULLY REGISTERED");
 
-        return new ResponseEntity<SaveAddressResponse>(saveAddressResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(saveAddressResponse, HttpStatus.CREATED);
     }
 
     /**
@@ -100,12 +100,12 @@ public class AddressController {
         if (!allAddress.isEmpty()) {
             allAddress.forEach(
                     address -> addressLists.add(setAddressList(address)));
-        };
+        }
 
         final AddressListResponse addressListResponse = new AddressListResponse()
                 .addresses(addressLists);
 
-        return new ResponseEntity<AddressListResponse>(addressListResponse, HttpStatus.OK);
+        return new ResponseEntity<>(addressListResponse, HttpStatus.OK);
 
     }
 
@@ -163,7 +163,7 @@ public class AddressController {
                 .id(UUID.fromString(deletedAddressEntity.getUuid()))
                 .status("ADDRESS DELETED SUCCESSFULLY");
 
-        return new ResponseEntity<DeleteAddressResponse>(deleteAddressResponse, HttpStatus.OK);
+        return new ResponseEntity<>(deleteAddressResponse, HttpStatus.OK);
 
     }
 
@@ -193,6 +193,6 @@ public class AddressController {
             statesListResponse.states(statesLists);
         }
 
-        return new ResponseEntity<StatesListResponse>(statesListResponse, HttpStatus.OK);
+        return new ResponseEntity<>(statesListResponse, HttpStatus.OK);
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -46,26 +45,16 @@ public class AddressDao {
     }
 
     /**
-     * Method to save CustomerAddressEntity in the database
-     *
-     * @param customerAddressEntity - CustomerAddressEntity to be persisted in the database
-     */
-    public void saveCustomerAddr(final CustomerAddressEntity customerAddressEntity) {
-        entityManager.persist(customerAddressEntity);
-    }
-
-    /**
      * Method to retrieve all addresses from the database for a customer
      *
      * @param customerEntity - CustomerEntity object
      * @return - List of CustomerAddressEntity
      */
     public List<CustomerAddressEntity> getAllAddress(final CustomerEntity customerEntity) {
-        final List<CustomerAddressEntity> addresses = entityManager
+        return entityManager
                 .createNamedQuery("customerAddressByCustomer", CustomerAddressEntity.class)
                 .setParameter("customerId", customerEntity.getId())
                 .getResultList();
-        return addresses;
     }
 
     /**
@@ -118,7 +107,6 @@ public class AddressDao {
      * @return - Updated AddressEntity object
      */
     public AddressEntity updateAddress(final AddressEntity addressEntity) {
-        final AddressEntity updatedAddressEntity = entityManager.merge(addressEntity);
-        return updatedAddressEntity;
+        return entityManager.merge(addressEntity);
     }
 }

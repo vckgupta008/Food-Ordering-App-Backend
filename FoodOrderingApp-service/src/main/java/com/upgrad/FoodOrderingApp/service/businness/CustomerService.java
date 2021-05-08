@@ -52,8 +52,7 @@ public class CustomerService {
         }
 
         // Throw exception if the contact number is not valid
-        if (customerEntity.getContactNumber().length() > 10
-                || customerEntity.getContactNumber().length() < 10
+        if (customerEntity.getContactNumber().length() != 10
                 || !StringUtils.isNumeric(customerEntity.getContactNumber())) {
             throw new SignUpRestrictedException("SGR-003", "Invalid contact number!");
         }
@@ -95,7 +94,7 @@ public class CustomerService {
         }
 
         // If the password provided is incorrect, throw exception
-        final String encryptedPassword = cryptographyProvider.encrypt(password, customerEntity.getSalt());
+        final String encryptedPassword = PasswordCryptographyProvider.encrypt(password, customerEntity.getSalt());
         if (!encryptedPassword.equals(customerEntity.getPassword())) {
             throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
         }
@@ -155,8 +154,7 @@ public class CustomerService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerEntity updateCustomer(final CustomerEntity customerEntity) {
-        final CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
-        return updatedCustomerEntity;
+        return customerDao.updateCustomer(customerEntity);
     }
 
     /**
@@ -180,15 +178,14 @@ public class CustomerService {
         }
 
         // If the old password provided is incorrect, throw exception
-        final String encryptedPassword = cryptographyProvider.encrypt(oldPassword, customerEntity.getSalt());
+        final String encryptedPassword = PasswordCryptographyProvider.encrypt(oldPassword, customerEntity.getSalt());
         if (!encryptedPassword.equals(customerEntity.getPassword())) {
             throw new UpdateCustomerException("UCR-004", "Incorrect old password!");
         }
 
         // Set encrypted password into CustomerEntity object
         setEncryptedPassword(customerEntity, newPassword);
-        final CustomerEntity updatedCustomerEntity = customerDao.updateCustomer(customerEntity);
-        return updatedCustomerEntity;
+        return customerDao.updateCustomer(customerEntity);
 
     }
 

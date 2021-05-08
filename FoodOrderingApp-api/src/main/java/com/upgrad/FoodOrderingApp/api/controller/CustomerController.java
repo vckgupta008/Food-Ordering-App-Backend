@@ -71,7 +71,7 @@ public class CustomerController {
                 .id(createdCustomerEntity.getUuid())
                 .status("CUSTOMER SUCCESSFULLY REGISTERED");
 
-        return new ResponseEntity<SignupCustomerResponse>(customerResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(customerResponse, HttpStatus.CREATED);
     }
 
     /**
@@ -88,7 +88,7 @@ public class CustomerController {
     public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") final String authorization)
             throws AuthenticationFailedException {
 
-        if (!authorization.substring(0, 6).equals("Basic ")) {
+        if (!authorization.startsWith("Basic ")) {
             throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
         }
 
@@ -116,7 +116,7 @@ public class CustomerController {
         header.add("access-token");
         headers.setAccessControlExposeHeaders(header);
 
-        return new ResponseEntity<LoginResponse>(loginResponse, headers, HttpStatus.OK);
+        return new ResponseEntity<>(loginResponse, headers, HttpStatus.OK);
     }
 
     /**
@@ -142,7 +142,7 @@ public class CustomerController {
                 .id(customerEntity.getUuid())
                 .message("LOGGED OUT SUCCESSFULLY");
 
-        return new ResponseEntity<LogoutResponse>(logoutResponse, HttpStatus.OK);
+        return new ResponseEntity<>(logoutResponse, HttpStatus.OK);
     }
 
     /**
@@ -180,7 +180,7 @@ public class CustomerController {
                 .firstName(updatedCustomerEntity.getFirstName())
                 .lastName(updatedCustomerEntity.getLastName());
 
-        return new ResponseEntity<UpdateCustomerResponse>(updateCustomerResponse, HttpStatus.OK);
+        return new ResponseEntity<>(updateCustomerResponse, HttpStatus.OK);
     }
 
     /**
@@ -221,7 +221,7 @@ public class CustomerController {
                 .id(updatedCustomerEntity.getUuid())
                 .status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
 
-        return new ResponseEntity<UpdatePasswordResponse>(updatePasswordResponse, HttpStatus.OK);
+        return new ResponseEntity<>(updatePasswordResponse, HttpStatus.OK);
     }
 
 }

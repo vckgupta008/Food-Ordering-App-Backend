@@ -76,9 +76,8 @@ public class AddressService {
         final List<CustomerEntity> customerEntities = new ArrayList<>();
         customerEntities.add(customerEntity);
         addressEntity.setCustomers(customerEntities);
-        final AddressEntity savedAddressEntity = addressDao.saveAddress(addressEntity);
 
-        return savedAddressEntity;
+        return addressDao.saveAddress(addressEntity);
     }
 
     /**
@@ -136,8 +135,7 @@ public class AddressService {
         final List<OrderEntity> orderEntities = orderDao.getOrdersByAddress(addressEntity);
         if (orderEntities.size() > 0) {
             addressEntity.setActive(0);
-            final AddressEntity updatedAddressEntity = addressDao.updateAddress(addressEntity);
-            return updatedAddressEntity;
+            return addressDao.updateAddress(addressEntity);
         } else {
             addressDao.deleteAddress(addressEntity);
             return addressEntity;
@@ -151,8 +149,7 @@ public class AddressService {
      * @return - List of all StateEntity
      */
     public List<StateEntity> getAllStates() {
-        final List<StateEntity> stateEntities = stateDao.getAllStates();
-        return stateEntities;
+        return stateDao.getAllStates();
     }
 }
 
