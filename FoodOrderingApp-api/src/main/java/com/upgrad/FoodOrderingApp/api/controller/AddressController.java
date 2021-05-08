@@ -14,14 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Controller
+@RestController
 @CrossOrigin
 public class AddressController {
 
@@ -49,8 +48,9 @@ public class AddressController {
      */
     @RequestMapping(method = RequestMethod.POST, path = "/address",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SaveAddressResponse> saveAddress(@RequestHeader("authorization") final String authorization,
-                                                           @RequestBody(required = false) final SaveAddressRequest saveAddressRequest)
+    public ResponseEntity<SaveAddressResponse> saveAddress(
+            @RequestHeader("authorization") final String authorization,
+            @RequestBody(required = false) final SaveAddressRequest saveAddressRequest)
             throws AuthorizationFailedException, SaveAddressException, AddressNotFoundException {
 
         final String accessToken = authorization.split("Bearer ")[1];
@@ -89,7 +89,8 @@ public class AddressController {
      */
     @RequestMapping(method = RequestMethod.GET, path = "/address/customer",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<AddressListResponse> getAllAddress(@RequestHeader("authorization") final String authorization)
+    public ResponseEntity<AddressListResponse> getAllAddress(
+            @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException {
 
         final String accessToken = authorization.split("Bearer ")[1];
@@ -144,8 +145,9 @@ public class AddressController {
      */
     @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<DeleteAddressResponse> deleteSavedAddress(@RequestHeader("authorization") final String authorization,
-                                                                    @PathVariable("address_id") final String addressId)
+    public ResponseEntity<DeleteAddressResponse> deleteSavedAddress(
+            @RequestHeader("authorization") final String authorization,
+            @PathVariable("address_id") final String addressId)
             throws AuthorizationFailedException, AddressNotFoundException {
 
         final String accessToken = authorization.split("Bearer ")[1];

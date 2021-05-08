@@ -20,11 +20,17 @@ import java.util.List;
 @NamedQueries(
         {
                 @NamedQuery(name = "itemById",
-                        query = "select i from ItemEntity i where i.uuid= :itemUuid")
+                        query = "select i from ItemEntity i where i.uuid= :itemUuid"),
+                @NamedQuery(name = "itemsByCategoryByRestaurant",
+                        query = "select i from ItemEntity i  where i.id in (select ri.item.id from RestaurantItemEntity ri "
+                                + "inner join CategoryItemEntity ci on ri.item.id = ci.item.id "
+                                + "where ri.restaurant.uuid = :restaurantUuid "
+                                + "and ci.category.uuid = :categoryUuid)"
+                                + "order by i.itemName asc")
         }
 )
 @NamedNativeQueries({
-        // Using native query as named queries do not support LIMIT in nested statements.
+        // Using native query as named queries do not support LIMIT in nested statements and select query inside inner join
         @NamedNativeQuery(
                 name = "topFivePopularItemsByRestaurant",
                 query =

@@ -43,7 +43,7 @@ public class RestaurantDao {
      * @return - list of get all restaurants category entity using category uuid
      */
     public List<RestaurantCategoryEntity> restaurantsByCategoryId(final String categoryUuid) {
-        return entityManager.createNamedQuery("getRestaurantsByCategory", RestaurantCategoryEntity.class)
+        return entityManager.createNamedQuery("restaurantsByCategory", RestaurantCategoryEntity.class)
                 .setParameter("categoryUuid", categoryUuid)
                 .getResultList();
     }
@@ -62,5 +62,14 @@ public class RestaurantDao {
         } catch (NoResultException nre) {
             return null;
         }
+    }
+
+    /**
+     * Method to update RestaurantEntity in the database
+     * @param restaurantEntity - RestaurantEntity object
+     * @return - updated RestaurantEntity
+     */
+    public RestaurantEntity updateRestaurantEntity(final RestaurantEntity restaurantEntity) {
+        return entityManager.merge(restaurantEntity);
     }
 }

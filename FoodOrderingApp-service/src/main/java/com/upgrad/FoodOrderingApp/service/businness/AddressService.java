@@ -3,7 +3,6 @@ package com.upgrad.FoodOrderingApp.service.businness;
 import com.upgrad.FoodOrderingApp.service.common.CommonValidation;
 import com.upgrad.FoodOrderingApp.service.dao.AddressDao;
 import com.upgrad.FoodOrderingApp.service.dao.OrderDao;
-import com.upgrad.FoodOrderingApp.service.dao.StateDao;
 import com.upgrad.FoodOrderingApp.service.entity.*;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
@@ -25,9 +24,6 @@ public class AddressService {
 
     @Autowired
     private CommonValidation commonValidation;
-
-    @Autowired
-    private StateDao stateDao;
 
     @Autowired
     private OrderDao orderDao;
@@ -56,7 +52,8 @@ public class AddressService {
      * @return - saved AddressEntity
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public AddressEntity saveAddress(final AddressEntity addressEntity, final CustomerEntity customerEntity) throws SaveAddressException {
+    public AddressEntity saveAddress(final AddressEntity addressEntity, final CustomerEntity customerEntity)
+            throws SaveAddressException {
 
         // Throw exception if any of the required field is Empty
         if (commonValidation.isEmptyFieldValue((addressEntity.getFlatBuilNo()))
@@ -149,7 +146,7 @@ public class AddressService {
      * @return - List of all StateEntity
      */
     public List<StateEntity> getAllStates() {
-        return stateDao.getAllStates();
+        return addressDao.getAllStates();
     }
 }
 

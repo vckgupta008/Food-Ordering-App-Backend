@@ -109,4 +109,13 @@ public class AddressDao {
     public AddressEntity updateAddress(final AddressEntity addressEntity) {
         return entityManager.merge(addressEntity);
     }
+
+    /**
+     * Method to retrieve all state name from the database
+     *
+     * @return - To get All States if no results return null
+     */
+    public List<StateEntity> getAllStates() {
+        return entityManager.createNamedQuery("allStates", StateEntity.class).getResultList();
+    }
 }

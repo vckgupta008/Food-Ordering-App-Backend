@@ -45,8 +45,7 @@ public class ItemService {
      * @return - List of item details using restaurantUuid and categoryUuid
      */
     public List<ItemEntity> getItemsByCategoryAndRestaurant(final String restaurantUuid, final String categoryUuid) {
-        CategoryEntity categoryEntity = categoryDao.getCategoryById(categoryUuid);
-        return categoryEntity.getItems();
+        return itemDao.getItemsByCategoryAndRestaurant(restaurantUuid, categoryUuid);
     }
 
     /**

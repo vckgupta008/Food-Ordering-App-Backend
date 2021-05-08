@@ -159,8 +159,9 @@ public class CustomerController {
      */
     @RequestMapping(method = RequestMethod.PUT, path = "/customer",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader("authorization") final String authorization,
-                                                                        @RequestBody(required = false) final UpdateCustomerRequest updateCustomerRequest)
+    public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(
+            @RequestHeader("authorization") final String authorization,
+            @RequestBody(required = false) final UpdateCustomerRequest updateCustomerRequest)
             throws AuthorizationFailedException, UpdateCustomerException {
 
         // Throw exception if first name of customer is not provided
@@ -199,8 +200,9 @@ public class CustomerController {
     @RequestMapping(method = RequestMethod.PUT, path = "/customer/password",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String authorization,
-                                                                         @RequestBody(required = false) final UpdatePasswordRequest updatePasswordRequest)
+    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(
+            @RequestHeader("authorization") final String authorization,
+            @RequestBody(required = false) final UpdatePasswordRequest updatePasswordRequest)
             throws AuthorizationFailedException, UpdateCustomerException {
 
         final String oldPassword = updatePasswordRequest.getOldPassword();

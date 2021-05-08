@@ -48,7 +48,7 @@ public class CategoryDao {
      * @return -  get all RestaurantCategoryEntity  using restaurant uuid
      */
     public List<RestaurantCategoryEntity> getCategoriesByRestaurant(final String restaurantUuid) {
-        return entityManager.createNamedQuery("getCategoriesByRestaurant", RestaurantCategoryEntity.class)
+        return entityManager.createNamedQuery("categoriesByRestaurant", RestaurantCategoryEntity.class)
                 .setParameter("restaurantUuid", restaurantUuid)
                 .getResultList();
     }

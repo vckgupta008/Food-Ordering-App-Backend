@@ -58,10 +58,10 @@ public class CategoryService {
      */
 
     public List<CategoryEntity> getCategoriesByRestaurant(final String restaurantUuid) {
-        List<RestaurantCategoryEntity> categoriesByRestaurant = categoryDao.getCategoriesByRestaurant(restaurantUuid);
+        final List<RestaurantCategoryEntity> categoriesByRestaurant = categoryDao.getCategoriesByRestaurant(restaurantUuid);
 
-        List<CategoryEntity> categoryEntities = new ArrayList<>();
-        if (categoriesByRestaurant != null) {
+        final List<CategoryEntity> categoryEntities = new ArrayList<>();
+        if (!categoriesByRestaurant.isEmpty()) {
             categoriesByRestaurant.forEach(restaurantCategoryEntity -> categoryEntities.add(restaurantCategoryEntity.getCategory()));
         }
         return categoryEntities;

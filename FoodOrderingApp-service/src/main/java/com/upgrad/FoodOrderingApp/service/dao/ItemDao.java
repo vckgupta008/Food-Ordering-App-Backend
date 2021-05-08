@@ -41,4 +41,18 @@ public class ItemDao {
                 .setParameter(0, restaurantId)
                 .getResultList();
     }
+
+    /**
+     * Method to retrieve all items for a category of a restaurant
+     *
+     * @param restaurantUuid - Restaurant UUID
+     * @param categoryUuid   - Category UUID
+     * @return List of ItemEntity
+     */
+    public List<ItemEntity> getItemsByCategoryAndRestaurant(final String restaurantUuid, final String categoryUuid) {
+        return entityManager.createNamedQuery("itemsByCategoryByRestaurant", ItemEntity.class)
+                .setParameter("restaurantUuid", restaurantUuid)
+                .setParameter("categoryUuid", categoryUuid)
+                .getResultList();
+    }
 }

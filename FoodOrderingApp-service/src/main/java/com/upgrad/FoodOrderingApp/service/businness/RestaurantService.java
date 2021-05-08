@@ -7,9 +7,12 @@ import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantCategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
+import com.upgrad.FoodOrderingApp.service.exception.InvalidRatingException;
 import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +46,13 @@ public class RestaurantService {
      * @throws RestaurantNotFoundException - if the restaurant name is empty
      */
     public List<RestaurantEntity> restaurantsByName(final String restaurantName) throws RestaurantNotFoundException {
+
         // Throw exception if the restaurant name is empty
         if (commonValidation.isEmptyFieldValue(restaurantName)) {
             throw new RestaurantNotFoundException("RNF-003", "Restaurant name field should not be empty");
         }
-        List<RestaurantEntity> restaurantEntities = restaurantDao.restaurantsByName(restaurantName);
 
-        return restaurantEntities;
+        return restaurantDao.restaurantsByName(restaurantName);
     }
 
     /**
@@ -61,7 +64,7 @@ public class RestaurantService {
      */
     public List<RestaurantEntity> restaurantByCategory(final String categoryUuid) throws CategoryNotFoundException {
         // Throw exception if the category uuid is empty
-        if (categoryUuid.isEmpty()) {
+        if (commonValidation.isEmptyFieldValue(categoryUuid)) {
             throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");
         }
 
@@ -75,29 +78,57 @@ public class RestaurantService {
 
         List<RestaurantCategoryEntity> restaurantCategoryEntities = restaurantDao
                 .restaurantsByCategoryId(categoryEntity.getUuid());
-        restaurantCategoryEntities.forEach(restaurantCategoryEntity -> {
-            restaurantEntities.add(restaurantCategoryEntity.getRestaurant());
-        });
+        restaurantCategoryEntities.forEach(restaurantCategoryEntity -> restaurantEntities.add(restaurantCategoryEntity.getRestaurant()));
         return restaurantEntities;
     }
 
     /**
      * Method to retrieve RestaurantEntity for the given restaurant UUID
+     *
      * @param restaurantUuid - String represents restaurant UUID
      * @return - RestaurantEntity object
      * @throws RestaurantNotFoundException - if no restaurant in found in the database for the given restaurant uuid
      */
     public RestaurantEntity restaurantByUUID(final String restaurantUuid) throws RestaurantNotFoundException {
-        RestaurantEntity restaurantEntity = restaurantDao.restaurantByUUID(restaurantUuid);
-        // Throw exception if no restaurant in found in the database for the given restaurant uuid
 
-        if(restaurantUuid.isEmpty()){
+        if (commonValidation.isEmptyFieldValue(restaurantUuid)) {
             throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");
         }
 
+        RestaurantEntity restaurantEntity = restaurantDao.restaurantByUUID(restaurantUuid);
+
+        // Throw exception if no restaurant in found in the database for the given restaurant uuid
         if (restaurantEntity == null) {
             throw new RestaurantNotFoundException("RNF-001", "No restaurant by this id");
         }
         return restaurantEntity;
+    }
+
+    /**
+     * Method to update RestaurantEntity
+     *
+     * @param restaurantEntity - RestaurantEntity object
+     * @param customerRating   - Customer rating
+     * @return - updated RestaurantEntity
+     * @throws InvalidRatingException - if the rating is not in the range of 1 to 5
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public RestaurantEntity updateRestaurantRating(final RestaurantEntity restaurantEntity, final Double customerRating)
+            throws InvalidRatingException {
+        // Throw exception if the rating is not in the range of 1 to 5
+        if (customerRating < 1 || customerRating > 5) {
+            throw new InvalidRatingException("IRE-001", "Restaurant should be in the range of 1 to 5");
+        }
+
+        Double currentRating = restaurantEntity.getCustomerRating();
+        Integer numberCustomersRated = restaurantEntity.getNumberCustomersRated();
+
+        Double newRating =
+                ((currentRating * numberCustomersRated) + currentRating) / (++numberCustomersRated);
+
+        restaurantEntity.setCustomerRating(newRating);
+        restaurantEntity.setNumberCustomersRated(numberCustomersRated);
+
+        return restaurantDao.updateRestaurantEntity(restaurantEntity);
     }
 }

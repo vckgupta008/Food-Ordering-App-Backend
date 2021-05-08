@@ -126,7 +126,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Method to handle RestaurantNotFoundException if user does not exist in the database
+     * Method to handle RestaurantNotFoundException if restaurant id is empty, or restaurant does not exist in the database
      *
      * @param excp      - RestaurantNotFoundException
      * @param request   - WebRequest
@@ -140,7 +140,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Method to handle PaymentMethodNotFoundException if user does not exist in the database
+     * Method to handle PaymentMethodNotFoundException if payment method does not exist in the database
      *
      * @param excp      - PaymentMethodNotFoundException
      * @param request   - WebRequest
@@ -154,7 +154,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Method to handle ItemNotFoundException if user does not exist in the database
+     * Method to handle ItemNotFoundException if item does not exist in the database
      *
      * @param excp      - ItemNotFoundException
      * @param request   - WebRequest
@@ -165,5 +165,19 @@ public class RestExceptionHandler {
             final ItemNotFoundException excp, final WebRequest request) {
         return new ResponseEntity<>(new ErrorResponse().code(excp.getCode())
                 .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Method to handle InvalidRatingException if customer did not enter valid rating
+     *
+     * @param excp      - InvalidRatingException
+     * @param request   - WebRequest
+     * @return          - ResponseEntity (ErrorResponse along with Http status code
+     */
+    @ExceptionHandler(InvalidRatingException.class)
+    public ResponseEntity<ErrorResponse> invalidRatingException(
+            final InvalidRatingException excp, final WebRequest request) {
+        return new ResponseEntity<>(new ErrorResponse().code(excp.getCode())
+                .message(excp.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }
 }
