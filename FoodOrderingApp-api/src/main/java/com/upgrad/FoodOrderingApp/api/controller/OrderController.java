@@ -53,8 +53,9 @@ public class OrderController {
      */
     @RequestMapping(method = RequestMethod.GET, path = "/order/coupon/{coupon_name}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CouponDetailsResponse> getCouponDetails(@RequestHeader("authorization") final String authorization,
-                                                                         @PathVariable("coupon_name") final String couponName)
+    public ResponseEntity<CouponDetailsResponse> getCouponDetails(
+            @RequestHeader("authorization") final String authorization,
+            @PathVariable("coupon_name") final String couponName)
             throws AuthorizationFailedException, CouponNotFoundException {
         final String accessToken = authorization.split("Bearer ")[1];
         final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
@@ -65,7 +66,7 @@ public class OrderController {
                 .couponName(couponEntity.getCouponName())
                 .percent(couponEntity.getPercent());
 
-        return new ResponseEntity<CouponDetailsResponse>(couponDetailsResponse, HttpStatus.OK);
+        return new ResponseEntity<>(couponDetailsResponse, HttpStatus.OK);
     }
 
     /**
@@ -134,7 +135,7 @@ public class OrderController {
                 .id(savedOrderEntity.getUuid())
                 .status("ORDER SUCCESSFULLY PLACED");
 
-        return new ResponseEntity<SaveOrderResponse>(saveOrderResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(saveOrderResponse, HttpStatus.CREATED);
     }
 
     /**
@@ -149,7 +150,8 @@ public class OrderController {
      */
     @RequestMapping(method = RequestMethod.GET, path = "/order",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CustomerOrderResponse> getAllPastOrders(@RequestHeader("authorization") final String authorization)
+    public ResponseEntity<CustomerOrderResponse> getAllPastOrders(
+            @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException {
 
         final String accessToken = authorization.split("Bearer ")[1];
@@ -160,7 +162,7 @@ public class OrderController {
 
         final CustomerOrderResponse customerOrderResponse = new CustomerOrderResponse()
                 .orders(orderLists);
-        return new ResponseEntity<CustomerOrderResponse>(customerOrderResponse, HttpStatus.OK);
+        return new ResponseEntity<>(customerOrderResponse, HttpStatus.OK);
     }
 
     /**
@@ -174,8 +176,8 @@ public class OrderController {
         for (OrderEntity orderEntity : orderEntities) {
             final OrderList orderList = new OrderList();
             orderList.id(UUID.fromString(orderEntity.getUuid()));
-            orderList.bill(new BigDecimal(orderEntity.getBill()));
-            orderList.discount(new BigDecimal(orderEntity.getDiscount()));
+            orderList.bill(BigDecimal.valueOf(orderEntity.getBill()));
+            orderList.discount(BigDecimal.valueOf(orderEntity.getDiscount()));
             orderList.date(orderEntity.getDate().toString());
 
             // Set CouponEntity into OrderListCoupon
@@ -229,7 +231,7 @@ public class OrderController {
                 itemQuantityResponseItem.id(UUID.fromString(item.getUuid()));
                 itemQuantityResponseItem.itemName(item.getItemName());
                 itemQuantityResponseItem.itemPrice(item.getPrice());
-                final String itemType = item.getType().equals(0) ? "VEG" : "NON_VEG";
+                final String itemType = item.getType().equals("0") ? "VEG" : "NON_VEG";
                 itemQuantityResponseItem.type(ItemQuantityResponseItem.TypeEnum.fromValue(itemType));
 
                 // Set OrderItemEntity into ItemQuantityResponse

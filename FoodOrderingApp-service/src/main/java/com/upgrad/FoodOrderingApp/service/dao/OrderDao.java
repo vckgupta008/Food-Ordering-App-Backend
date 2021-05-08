@@ -95,6 +95,11 @@ public class OrderDao {
                 .getResultList();
     }
 
+    /**
+     * Method to get list of OrderEntity on a particular address
+     * @param addressEntity - AddressEntity object
+     * @return - List of OrderEntity
+     */
     public List<OrderEntity> getOrdersByAddress(AddressEntity addressEntity) {
         return entityManager.createNamedQuery("ordersByAddress", OrderEntity.class)
                 .setParameter("addressUuid", addressEntity.getUuid())

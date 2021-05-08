@@ -48,6 +48,6 @@ public class PaymentController {
         final PaymentListResponse paymentListResponse = new PaymentListResponse()
                 .paymentMethods(paymentResponses);
 
-        return new ResponseEntity<PaymentListResponse>(paymentListResponse, HttpStatus.OK);
+        return new ResponseEntity<>(paymentListResponse, HttpStatus.OK);
     }
 }
