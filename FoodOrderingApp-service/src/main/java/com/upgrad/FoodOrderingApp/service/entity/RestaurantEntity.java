@@ -3,7 +3,6 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -38,6 +37,7 @@ public class RestaurantEntity implements Serializable {
     private Integer id;
 
     @Column(name = "UUID")
+    @Size(max = 200)
     @NotNull
     private String uuid;
 
@@ -72,6 +72,12 @@ public class RestaurantEntity implements Serializable {
             joinColumns = @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "id", nullable = false))
     private List<CategoryEntity> categories;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "restaurant_item",
+            joinColumns = @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "ITEM_ID", referencedColumnName = "id", nullable = false))
+    private List<ItemEntity> items;
 
     public Integer getId() {
         return id;
@@ -145,19 +151,67 @@ public class RestaurantEntity implements Serializable {
         this.categories = categories;
     }
 
+    public List<ItemEntity> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemEntity> items) {
+        this.items = items;
+    }
+
     @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RestaurantEntity that = (RestaurantEntity) o;
+
+        return new EqualsBuilder()
+                .append(id, that.id)
+                .append(uuid, that.uuid)
+                .append(restaurantName, that.restaurantName)
+                .append(photoUrl, that.photoUrl)
+                .append(customerRating, that.customerRating)
+                .append(numberCustomersRated, that.numberCustomersRated)
+                .append(avgPrice, that.avgPrice)
+                .append(address, that.address)
+                .append(categories, that.categories)
+                .append(items, that.items)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(uuid)
+                .append(restaurantName)
+                .append(photoUrl)
+                .append(customerRating)
+                .append(numberCustomersRated)
+                .append(avgPrice)
+                .append(address)
+                .append(categories)
+                .append(items)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("uuid", uuid)
+                .append("restaurantName", restaurantName)
+                .append("photoUrl", photoUrl)
+                .append("customerRating", customerRating)
+                .append("numberCustomersRated", numberCustomersRated)
+                .append("avgPrice", avgPrice)
+                .append("address", address)
+                .append("categories", categories)
+                .append("items", items)
+                .toString();
     }
 
 }

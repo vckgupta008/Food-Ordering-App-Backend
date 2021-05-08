@@ -6,9 +6,11 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class ItemDao {
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -26,5 +28,17 @@ public class ItemDao {
         } catch (NoResultException nre) {
             return null;
         }
+    }
+
+    /**
+     * Method to retrieve the top five items of that restaurant based on the number of times that item was ordered
+     *
+     * @param restaurantId - Restaurant Id
+     * @return - List of ItemEntity
+     */
+    public List<ItemEntity> getItemsByPopularity(final Integer restaurantId) {
+        return entityManager.createNamedQuery("topFivePopularItemsByRestaurant", ItemEntity.class)
+                .setParameter(0, restaurantId)
+                .getResultList();
     }
 }

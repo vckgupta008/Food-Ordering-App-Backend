@@ -57,10 +57,10 @@ public class CategoryController {
      * @throws CategoryNotFoundException - if incorrect/ invalid category id is sent,
      *                                   or the category id doesn't exist
      */
-    @RequestMapping(method = RequestMethod.GET, path = "/category/{categoryId}",
+    @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CategoryDetailsResponse> getCategoryById(
-            @PathVariable("categoryId") final String categoryId) throws CategoryNotFoundException {
+            @PathVariable("category_id") final String categoryId) throws CategoryNotFoundException {
         final CategoryEntity categoryEntity = categoryService.getCategoryById(categoryId);
         final List<ItemEntity> itemEntities = categoryEntity.getItems();
 
