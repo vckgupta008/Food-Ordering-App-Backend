@@ -2,6 +2,7 @@ package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.*;
+import com.upgrad.FoodOrderingApp.service.common.CommonValidation;
 import com.upgrad.FoodOrderingApp.service.entity.*;
 import com.upgrad.FoodOrderingApp.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class OrderController {
 
     @Autowired
     private ItemService itemService;
+
+    @Autowired
+    private CommonValidation commonValidation;
 
     /**
      * RestController method called when the request pattern is of type "/order/coupon/{coupon_name}"
@@ -95,8 +99,17 @@ public class OrderController {
         final String accessToken = authorization.split("Bearer ")[1];
         // Retrieve all the required entities to set in the OrderEntity
         final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
-        final CouponEntity couponEntity = orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString());
-        final PaymentEntity paymentEntity = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
+
+        CouponEntity couponEntity = null;
+        if (saveOrderRequest.getCouponId() != null) {
+            couponEntity = orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString());
+        }
+
+        PaymentEntity paymentEntity = null;
+        if (saveOrderRequest.getPaymentId() != null) {
+            paymentEntity = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
+        }
+
         final AddressEntity addressEntity = addressService.getAddressByUUID(saveOrderRequest.getAddressId(), customerEntity);
         final RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString());
 
@@ -158,7 +171,7 @@ public class OrderController {
         final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
         final List<OrderEntity> orderEntities = orderService.getOrdersByCustomers(customerEntity.getUuid());
 
-        final List<OrderList> orderLists = setOrderLists(orderEntities);
+        final List<OrderList> orderLists = createOrderLists(orderEntities);
 
         final CustomerOrderResponse customerOrderResponse = new CustomerOrderResponse()
                 .orders(orderLists);
@@ -171,7 +184,7 @@ public class OrderController {
      * @param orderEntities -List of OrderEntity
      * @return - List of OrderList
      */
-    private List<OrderList> setOrderLists(final List<OrderEntity> orderEntities) {
+    private List<OrderList> createOrderLists(final List<OrderEntity> orderEntities) {
         final List<OrderList> orderLists = new ArrayList<>();
         for (OrderEntity orderEntity : orderEntities) {
             final OrderList orderList = new OrderList();
@@ -181,19 +194,23 @@ public class OrderController {
             orderList.date(orderEntity.getDate().toString());
 
             // Set CouponEntity into OrderListCoupon
-            final OrderListCoupon orderListCoupon = new OrderListCoupon();
             final CouponEntity coupon = orderEntity.getCoupon();
-            orderListCoupon.id(UUID.fromString(coupon.getUuid()));
-            orderListCoupon.couponName(coupon.getCouponName());
-            orderListCoupon.percent(coupon.getPercent());
-            orderList.coupon(orderListCoupon);
+            if (coupon != null) {
+                final OrderListCoupon orderListCoupon = new OrderListCoupon();
+                orderListCoupon.id(UUID.fromString(coupon.getUuid()));
+                orderListCoupon.couponName(coupon.getCouponName());
+                orderListCoupon.percent(coupon.getPercent());
+                orderList.coupon(orderListCoupon);
+            }
 
             // Set PaymentEntity into OrderListPayment
-            final OrderListPayment orderListPayment = new OrderListPayment();
             final PaymentEntity payment = orderEntity.getPayment();
-            orderListPayment.id(UUID.fromString(payment.getUuid()));
-            orderListPayment.paymentName(payment.getPaymentName());
-            orderList.payment(orderListPayment);
+            if (payment != null) {
+                final OrderListPayment orderListPayment = new OrderListPayment();
+                orderListPayment.id(UUID.fromString(payment.getUuid()));
+                orderListPayment.paymentName(payment.getPaymentName());
+                orderList.payment(orderListPayment);
+            }
 
             // Set CustomerEntity into OrderListCustomer
             final OrderListCustomer orderListCustomer = new OrderListCustomer();

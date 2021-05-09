@@ -45,6 +45,12 @@ public class CustomerService {
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerEntity saveCustomer(final CustomerEntity customerEntity) throws SignUpRestrictedException {
 
+        // Throw exception if customer record exists in the database with the given contact number
+        final CustomerEntity custEntityByPhnNum = customerDao.getCustomerByContactNum(customerEntity.getContactNumber());
+        if (custEntityByPhnNum != null) {
+            throw new SignUpRestrictedException("SGR-001", "This contact number is already registered! Try other contact number.");
+        }
+
         // Throw exception if email Id pattern does not match the pattern
         final boolean isValidEmail = isValidPattern(EMAIL_PATTERN, customerEntity.getEmail());
         if (!isValidEmail) {
@@ -60,12 +66,6 @@ public class CustomerService {
         // Throw exception if password does not match the pattern
         if (!isValidPattern(PASSWORD_PATTERN, customerEntity.getPassword())) {
             throw new SignUpRestrictedException("SGR-004", "Weak password!");
-        }
-
-        // Throw exception if customer record exists in the database with the given contact number
-        final CustomerEntity custEntityByPhnNum = customerDao.getCustomerByContactNum(customerEntity.getContactNumber());
-        if (custEntityByPhnNum != null) {
-            throw new SignUpRestrictedException("SGR-001", "This contact number is already registered! Try other contact number.");
         }
 
         // Set encrypted passowrd into CustomerEntity object

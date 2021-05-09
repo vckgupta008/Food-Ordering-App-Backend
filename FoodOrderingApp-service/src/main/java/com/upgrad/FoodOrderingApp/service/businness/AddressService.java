@@ -59,8 +59,7 @@ public class AddressService {
         if (commonValidation.isEmptyFieldValue((addressEntity.getFlatBuilNo()))
                 || commonValidation.isEmptyFieldValue(addressEntity.getLocality())
                 || commonValidation.isEmptyFieldValue(addressEntity.getCity())
-                || commonValidation.isEmptyFieldValue(addressEntity.getPincode())
-                || commonValidation.isEmptyFieldValue(addressEntity.getUuid())) {
+                || commonValidation.isEmptyFieldValue(addressEntity.getPincode())) {
             throw new SaveAddressException("SAR-001", "No field can be empty");
         }
 
@@ -108,7 +107,7 @@ public class AddressService {
 
         final AddressEntity addressEntity = addressDao.getAddressByUUID(addressUuid);
         // Throw exception if no AddressEntity is found for the provided address UUID
-        if (addressEntity == null) {
+        if (addressEntity == null || addressEntity.getActive() != 1) {
             throw new AddressNotFoundException("ANF-003", "No address by this id");
         }
 

@@ -100,7 +100,7 @@ public class AddressController {
         final List<AddressList> addressLists = new ArrayList<>();
         if (!allAddress.isEmpty()) {
             allAddress.forEach(
-                    address -> addressLists.add(setAddressList(address)));
+                    address -> addressLists.add(createAddressList(address)));
         }
 
         final AddressListResponse addressListResponse = new AddressListResponse()
@@ -116,7 +116,7 @@ public class AddressController {
      * @param address - AddressEntity object
      * @return - AddressList
      */
-    private AddressList setAddressList(Object address) {
+    private AddressList createAddressList(Object address) {
         final AddressList addressList = new AddressList();
         AddressEntity addressEntity = (AddressEntity) address;
         addressList.id(UUID.fromString(addressEntity.getUuid()));
@@ -145,7 +145,7 @@ public class AddressController {
      */
     @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<DeleteAddressResponse> deleteSavedAddress(
+    public ResponseEntity<DeleteAddressResponse> deleteAddress(
             @RequestHeader("authorization") final String authorization,
             @PathVariable("address_id") final String addressId)
             throws AuthorizationFailedException, AddressNotFoundException {

@@ -44,7 +44,7 @@ public class ItemController {
 
         final ItemListResponse itemListResponse = new ItemListResponse();
         if (!itemEntities.isEmpty()) {
-            itemEntities.forEach(itemEntity -> itemListResponse.add(setItemList(itemEntity)));
+            itemEntities.forEach(itemEntity -> itemListResponse.add(createItemList(itemEntity)));
         }
 
         return new ResponseEntity<>(itemListResponse, HttpStatus.OK);
@@ -56,7 +56,7 @@ public class ItemController {
      * @param itemEntity - ItemEntity object
      * @return - ItemList object
      */
-    private ItemList setItemList(final ItemEntity itemEntity) {
+    private ItemList createItemList(final ItemEntity itemEntity) {
         final ItemList itemList = new ItemList();
         itemList.id(UUID.fromString(itemEntity.getUuid()));
         itemList.itemName(itemEntity.getItemName());

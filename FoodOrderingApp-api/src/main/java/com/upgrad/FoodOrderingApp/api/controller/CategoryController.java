@@ -38,7 +38,7 @@ public class CategoryController {
         if (!allCategories.isEmpty()) {
             final List<CategoryListResponse> categoryLists = new ArrayList<>();
             allCategories.forEach(
-                    category -> categoryLists.add(setCategoryList(category))
+                    category -> categoryLists.add(createCategoryList(category))
             );
             categoriesListResponse.categories(categoryLists);
         }
@@ -70,7 +70,7 @@ public class CategoryController {
 
         if (!itemEntities.isEmpty()) {
             final List<ItemList> itemLists = new ArrayList<>();
-            itemEntities.forEach(itemEntity -> itemLists.add(setItemList(itemEntity)));
+            itemEntities.forEach(itemEntity -> itemLists.add(createItemList(itemEntity)));
             categoryDetailsResponse.itemList(itemLists);
         }
 
@@ -83,7 +83,7 @@ public class CategoryController {
      * @param itemEntity - ItemEntity object
      * @return - ItemList
      */
-    private ItemList setItemList(final ItemEntity itemEntity) {
+    private ItemList createItemList(final ItemEntity itemEntity) {
         final ItemList itemList = new ItemList();
         itemList.id(UUID.fromString(itemEntity.getUuid()));
         itemList.itemName(itemEntity.getItemName());
@@ -99,7 +99,7 @@ public class CategoryController {
      * @param categoryEntity - CategoryEntity object
      * @return - CategoryListResponse
      */
-    private CategoryListResponse setCategoryList(final CategoryEntity categoryEntity) {
+    private CategoryListResponse createCategoryList(final CategoryEntity categoryEntity) {
         final CategoryListResponse categoryListResponse = new CategoryListResponse();
         categoryListResponse.categoryName(categoryEntity.getCategoryName());
         categoryListResponse.id(UUID.fromString(categoryEntity.getUuid()));
