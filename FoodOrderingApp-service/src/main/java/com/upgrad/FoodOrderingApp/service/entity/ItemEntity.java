@@ -30,19 +30,20 @@ import java.util.List;
         }
 )
 @NamedNativeQueries({
-        // Using native query as named queries do not support LIMIT in nested statements and select query inside inner join
-        @NamedNativeQuery(
-                name = "topFivePopularItemsByRestaurant",
-                query =
-                        "select * from item i " +
-                                "inner join " +
-                                "(select oi.item_id, count(oi.order_id) as cnt from order_item oi " +
-                                "INNER join orders o on oi.order_id = o.id " +
-                                "and o.restaurant_id = ? " +
-                                "group by oi.item_id " +
-                                "order by cnt desc LIMIT 5) b " +
-                                "on i.id = b.item_id " +
-                                "order by b.cnt desc ",
+        // Using native query as named queries do not support some SQL properties
+        @NamedNativeQuery(name = "topFivePopularItemsByRestaurant",
+        query = "select a.* from item a " +
+                "inner join restaurant_item d " +
+                "on a.id = d.item_id " +
+                "left join " +
+                "(select oi.item_id, sum(case when oi.order_id is null then 0 else 1 end) as cnt from order_item oi " +
+                "INNER join orders o on oi.order_id = o.id " +
+                "and o.restaurant_id = ? " +
+                "group by oi.item_id " +
+                "order by cnt desc LIMIT 5) b " +
+                "on a.id = b.item_id " +
+                "order by coalesce(b.cnt,0) desc " +
+                "limit 5",
                 resultClass = ItemEntity.class)
 })
 public class ItemEntity implements Serializable {
