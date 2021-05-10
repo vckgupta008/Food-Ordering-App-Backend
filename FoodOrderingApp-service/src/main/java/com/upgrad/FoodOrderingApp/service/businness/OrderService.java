@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class OrderService {
 
@@ -35,7 +37,7 @@ public class OrderService {
         if (commonValidation.isEmptyFieldValue(couponName)) {
             throw new CouponNotFoundException("CPF-002", "Coupon name field should not be empty");
         }
-        CouponEntity couponEntity = orderDao.getCouponByCouponName(couponName);
+        final CouponEntity couponEntity = orderDao.getCouponByCouponName(couponName);
 
         // Throw exception if the provided coupon name does not exist in the database
         if (couponEntity == null) {
@@ -74,11 +76,33 @@ public class OrderService {
 
     /**
      * Method to save OrderItemEntity in the database
+     *
      * @param orderItemEntity - OrderItemEntity to be persisted in the database
      * @return - persisted OrderItemEntity object
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public OrderItemEntity saveOrderItem(final OrderItemEntity orderItemEntity) {
         return orderDao.saveOrderItem(orderItemEntity);
+    }
+
+    /**
+     * Method to get all orders for a customer
+     *
+     * @param customerUuid - Customer UUID
+     * @return - List of OrderEntity objects
+     */
+    public List<OrderEntity> getOrdersByCustomers(final String customerUuid) {
+        final List<OrderEntity> orderEntities = orderDao.getOrdersByCustomers(customerUuid);
+        return orderEntities;
+    }
+
+    /**
+     * Method to get all OrderItemEntity for the given oderUUID
+     *
+     * @param orderUuid - Order UUID
+     * @return - List of OrderItemEntity obejcts
+     */
+    public List<OrderItemEntity> getOrderItemsByOrderUuid(final String orderUuid) {
+        return orderDao.getOrderItemsByOrderUuid(orderUuid);
     }
 }

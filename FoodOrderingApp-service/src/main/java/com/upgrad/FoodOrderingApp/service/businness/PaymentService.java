@@ -30,7 +30,7 @@ public class PaymentService {
      *
      * @param paymentUuid - Payment UUID
      * @return - PaymentEntity object
-     * @throws PaymentMethodNotFoundException - if not PaymentEntity in found in the database for the given payment UUID
+     * @throws PaymentMethodNotFoundException - if no PaymentEntity in found in the database for the given payment UUID
      */
     public PaymentEntity getPaymentByUUID(final String paymentUuid) throws PaymentMethodNotFoundException {
         final PaymentEntity paymentEntity = paymentDao.getPaymentByUUID(paymentUuid);

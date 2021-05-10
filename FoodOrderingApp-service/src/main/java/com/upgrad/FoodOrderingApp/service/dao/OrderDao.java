@@ -1,5 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
+import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderItemEntity;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class OrderDao {
@@ -67,5 +69,40 @@ public class OrderDao {
     public OrderItemEntity saveOrderItem(final OrderItemEntity orderItemEntity) {
         entityManager.persist(orderItemEntity);
         return orderItemEntity;
+    }
+
+    /**
+     * Method to get all OrderEntity for the customer
+     *
+     * @param customerUuid - Customer UUID
+     * @return - List of OrderEntity objects
+     */
+    public List<OrderEntity> getOrdersByCustomers(final String customerUuid) {
+        return entityManager.createNamedQuery("orderByCustomers", OrderEntity.class)
+                .setParameter("customerUuid", customerUuid)
+                .getResultList();
+    }
+
+    /**
+     * Method to get all OrderItemEntity for an order
+     *
+     * @param orderUuid - Order UUID
+     * @return - List of OrderItemEntity objects
+     */
+    public List<OrderItemEntity> getOrderItemsByOrderUuid(final String orderUuid) {
+        return entityManager.createNamedQuery("orderItemsByOrder", OrderItemEntity.class)
+                .setParameter("orderUuid", orderUuid)
+                .getResultList();
+    }
+
+    /**
+     * Method to get list of OrderEntity on a particular address
+     * @param addressEntity - AddressEntity object
+     * @return - List of OrderEntity
+     */
+    public List<OrderEntity> getOrdersByAddress(AddressEntity addressEntity) {
+        return entityManager.createNamedQuery("ordersByAddress", OrderEntity.class)
+                .setParameter("addressUuid", addressEntity.getUuid())
+                .getResultList();
     }
 }

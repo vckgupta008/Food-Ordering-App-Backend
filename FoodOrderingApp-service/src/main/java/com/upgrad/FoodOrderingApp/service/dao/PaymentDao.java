@@ -26,7 +26,7 @@ public class PaymentDao {
     /**
      * Method to get PaymentEntity for the given payment uuid
      *
-     * @param paymentUuid - STring represents payment UUID
+     * @param paymentUuid - String represents payment UUID
      * @return PaymentEntity if found in the database, else return null
      */
     public PaymentEntity getPaymentByUUID(final String paymentUuid) {

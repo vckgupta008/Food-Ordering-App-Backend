@@ -3,7 +3,6 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,6 +15,12 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "order_item")
+@NamedQueries(
+        {
+                @NamedQuery(name = "orderItemsByOrder",
+                        query = "select oi from OrderItemEntity oi where oi.order.uuid = :orderUuid")
+        }
+)
 public class OrderItemEntity implements Serializable {
 
     @Id
@@ -35,7 +40,7 @@ public class OrderItemEntity implements Serializable {
 
     @Column(name = "QUANTITY")
     @NotNull
-    private Integer quanity;
+    private Integer quantity;
 
     @Column(name = "PRICE")
     @NotNull
@@ -65,12 +70,12 @@ public class OrderItemEntity implements Serializable {
         this.item = item;
     }
 
-    public Integer getQuanity() {
-        return quanity;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setQuanity(Integer quanity) {
-        this.quanity = quanity;
+    public void setQuantity(Integer quanity) {
+        this.quantity = quanity;
     }
 
     public Integer getPrice() {
@@ -82,17 +87,41 @@ public class OrderItemEntity implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OrderItemEntity that = (OrderItemEntity) o;
+
+        return new EqualsBuilder()
+                .append(id, that.id)
+                .append(order, that.order)
+                .append(item, that.item)
+                .append(quantity, that.quantity)
+                .append(price, that.price)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(order)
+                .append(item)
+                .append(quantity)
+                .append(price)
+                .toHashCode();
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("order", order)
+                .append("item", item)
+                .append("quanity", quantity)
+                .append("price", price)
+                .toString();
     }
 }
