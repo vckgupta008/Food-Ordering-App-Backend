@@ -80,6 +80,9 @@ public class ItemEntity implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private List<RestaurantEntity> restaurants;
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
+    private List<OrderEntity> orders;
+
     public Integer getId() {
         return id;
     }
@@ -136,6 +139,14 @@ public class ItemEntity implements Serializable {
         this.restaurants = restaurants;
     }
 
+    public List<OrderEntity> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderEntity> orders) {
+        this.orders = orders;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -152,6 +163,7 @@ public class ItemEntity implements Serializable {
                 .append(type, that.type)
                 .append(categories, that.categories)
                 .append(restaurants, that.restaurants)
+                .append(orders, that.orders)
                 .isEquals();
     }
 
@@ -165,6 +177,7 @@ public class ItemEntity implements Serializable {
                 .append(type)
                 .append(categories)
                 .append(restaurants)
+                .append(orders)
                 .toHashCode();
     }
 
@@ -178,6 +191,7 @@ public class ItemEntity implements Serializable {
                 .append("type", type)
                 .append("categories", categories)
                 .append("restaurants", restaurants)
+                .append("orders", orders)
                 .toString();
     }
 }

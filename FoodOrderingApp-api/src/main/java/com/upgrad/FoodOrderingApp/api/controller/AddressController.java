@@ -153,11 +153,6 @@ public class AddressController {
         final String accessToken = authorization.split("Bearer ")[1];
         final CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
-        // Throw exception if the address UUID is empty
-        if (commonValidation.isEmptyFieldValue(addressId)) {
-            throw new AddressNotFoundException("ANF-005", "Address id can not be empty");
-        }
-
         final AddressEntity addressEntity = addressService.getAddressByUUID(addressId, customerEntity);
         final AddressEntity deletedAddressEntity = addressService.deleteAddress(addressEntity);
 

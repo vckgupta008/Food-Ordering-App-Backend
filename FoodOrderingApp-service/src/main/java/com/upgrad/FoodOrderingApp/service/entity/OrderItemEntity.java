@@ -40,7 +40,7 @@ public class OrderItemEntity implements Serializable {
 
     @Column(name = "QUANTITY")
     @NotNull
-    private Integer quanity;
+    private Integer quantity;
 
     @Column(name = "PRICE")
     @NotNull
@@ -70,12 +70,12 @@ public class OrderItemEntity implements Serializable {
         this.item = item;
     }
 
-    public Integer getQuanity() {
-        return quanity;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setQuanity(Integer quanity) {
-        this.quanity = quanity;
+    public void setQuantity(Integer quanity) {
+        this.quantity = quanity;
     }
 
     public Integer getPrice() {
@@ -98,7 +98,7 @@ public class OrderItemEntity implements Serializable {
                 .append(id, that.id)
                 .append(order, that.order)
                 .append(item, that.item)
-                .append(quanity, that.quanity)
+                .append(quantity, that.quantity)
                 .append(price, that.price)
                 .isEquals();
     }
@@ -109,7 +109,7 @@ public class OrderItemEntity implements Serializable {
                 .append(id)
                 .append(order)
                 .append(item)
-                .append(quanity)
+                .append(quantity)
                 .append(price)
                 .toHashCode();
     }
@@ -120,7 +120,7 @@ public class OrderItemEntity implements Serializable {
                 .append("id", id)
                 .append("order", order)
                 .append("item", item)
-                .append("quanity", quanity)
+                .append("quanity", quantity)
                 .append("price", price)
                 .toString();
     }

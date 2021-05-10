@@ -105,9 +105,14 @@ public class AddressService {
     public AddressEntity getAddressByUUID(final String addressUuid, final CustomerEntity customerEntity)
             throws AddressNotFoundException, AuthorizationFailedException {
 
+        // Throw exception if the address UUID is empty
+        if (commonValidation.isEmptyFieldValue(addressUuid)) {
+            throw new AddressNotFoundException("ANF-005", "Address id can not be empty");
+        }
+
         final AddressEntity addressEntity = addressDao.getAddressByUUID(addressUuid);
         // Throw exception if no AddressEntity is found for the provided address UUID
-        if (addressEntity == null || addressEntity.getActive() != 1) {
+        if (addressEntity == null) {
             throw new AddressNotFoundException("ANF-003", "No address by this id");
         }
 

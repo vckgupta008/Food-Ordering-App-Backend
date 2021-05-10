@@ -119,7 +119,7 @@ public class OrderController {
             final ItemEntity itemEntity = itemService.getItemById(itemQuantity.getItemId().toString());
             final OrderItemEntity orderItemEntity = new OrderItemEntity();
             orderItemEntity.setItem(itemEntity);
-            orderItemEntity.setQuanity(itemQuantity.getQuantity());
+            orderItemEntity.setQuantity(itemQuantity.getQuantity());
             orderItemEntity.setPrice(itemQuantity.getPrice());
             orderItemEntities.add(orderItemEntity);
         }
@@ -254,7 +254,7 @@ public class OrderController {
                 // Set OrderItemEntity into ItemQuantityResponse
                 final ItemQuantityResponse itemQuantityResponse = new ItemQuantityResponse();
                 itemQuantityResponse.item(itemQuantityResponseItem);
-                itemQuantityResponse.quantity(orderItemEntity.getQuanity());
+                itemQuantityResponse.quantity(orderItemEntity.getQuantity());
                 itemQuantityResponse.price(orderItemEntity.getPrice());
 
                 itemQuantityResponses.add(itemQuantityResponse);

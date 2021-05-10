@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * The OrderEntity class is mapped to table 'orders' in database
@@ -69,7 +70,7 @@ public class OrderEntity implements Serializable {
     @NotNull
     private Date date;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PAYMENT_ID")
     private PaymentEntity payment;
 
@@ -87,6 +88,12 @@ public class OrderEntity implements Serializable {
     @JoinColumn(name = "RESTAURANT_ID")
     @NotNull
     private RestaurantEntity restaurant;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "order_item",
+            joinColumns = @JoinColumn(name = "ORDER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ITEM_ID"))
+    private List<ItemEntity> items;
 
     public Integer getId() {
         return id;
@@ -168,6 +175,14 @@ public class OrderEntity implements Serializable {
         this.restaurant = restaurant;
     }
 
+    public List<ItemEntity> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemEntity> items) {
+        this.items = items;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -187,6 +202,7 @@ public class OrderEntity implements Serializable {
                 .append(customer, that.customer)
                 .append(address, that.address)
                 .append(restaurant, that.restaurant)
+                .append(items, that.items)
                 .isEquals();
     }
 
@@ -203,6 +219,7 @@ public class OrderEntity implements Serializable {
                 .append(customer)
                 .append(address)
                 .append(restaurant)
+                .append(items)
                 .toHashCode();
     }
 
@@ -219,6 +236,7 @@ public class OrderEntity implements Serializable {
                 .append("customer", customer)
                 .append("address", address)
                 .append("restaurant", restaurant)
+                .append("items", items)
                 .toString();
     }
 }
